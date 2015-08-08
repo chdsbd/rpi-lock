@@ -9,25 +9,20 @@ db_path = 'card_database.db'
 
 
 def user_setup():
-    print(
-        '''
+    print('''
     This script will use the lastest card read data from the rfid reader.
     If card already exists in table, data will be OVERWRITTEN!
     Please scan card before continuing if you have not done so already.\n
-        ''')
-
+    ''')
     binary, date = select_binary()
     print('Using ID from last read at {}. \nBinary: {}'.format(date, binary))
-
     name = raw_input('\nInput Name: ')
     print('Name:', name)
-
     status = raw_input('\nAllow entry (Yes/no): ')
     if status in ['No', 'no']:
         entry_status = False
     else:
         entry_status = True
-
     print('Entry status set to:', entry_status)
     raw_input('Hit ENTER to input data. CTRL-C to escape.')
     auth_card(binary, name, entry_status)
@@ -40,6 +35,9 @@ def select_binary():
         cur.execute('''SELECT Binary, Date FROM log ORDER BY Name
                        DESC LIMIT 1''')
         binary_id = cur.fetchone()
+        if binary_id is None:
+            print('Log file is empty. Scan card then run this script.')
+            exit(1)
         return binary_id
 
 

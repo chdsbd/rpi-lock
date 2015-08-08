@@ -20,6 +20,9 @@ base_timeout = 5
 timeout = base_timeout
 bits = ''
 
+PWM.set_loglevel(PWM.LOG_LEVEL_ERRORS)
+servo = PWM.Servo()
+
 
 def gpio_setup():
     GPIO.setmode(GPIO.BOARD)
@@ -27,14 +30,12 @@ def gpio_setup():
     GPIO.setup(data0, GPIO.IN)
     GPIO.add_event_detect(data1, GPIO.FALLING, callback=one)
     GPIO.add_event_detect(data0, GPIO.FALLING, callback=zero)
-    PWM.set_loglevel(PWM.LOG_LEVEL_ERRORS)
-    servo = PWM.Servo()
 
 
 def sql_setup():
     if os.path.isfile(db_path) != True:
         print('Missing Database. Run sql_setup.py script w/o root to create.')
-
+# TODO: Simplify checking if file exists and if tables exist within
     con = sqlite3.connect(db_path)
     with con:
         try:
@@ -123,6 +124,7 @@ def unlock_door():
     print('Unlocking...')
     servo.set_servo(servo_pin, servo_range[1])  # OPEN
     time.sleep(4)
+    print('Locking...')
     servo.set_servo(servo_pin, servo_range[0])  # CLOSE
     time.sleep(1)
     servo.stop_servo(servo_pin)
@@ -132,7 +134,6 @@ def main():
     try:
         gpio_setup()
         sql_setup()
-        sql_status()
         loop()
     except KeyboardInterrupt:
         print('\nRunning GPIO Cleanup')

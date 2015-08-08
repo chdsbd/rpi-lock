@@ -20,8 +20,6 @@ base_timeout = 5
 timeout = base_timeout
 bits = ''
 
-servo = PWM.Servo()
-
 
 def gpio_setup():
     GPIO.setmode(GPIO.BOARD)
@@ -29,82 +27,14 @@ def gpio_setup():
     GPIO.setup(data0, GPIO.IN)
     GPIO.add_event_detect(data1, GPIO.FALLING, callback=one)
     GPIO.add_event_detect(data0, GPIO.FALLING, callback=zero)
-
-
-def one(channel):
-    global bits
-    global timeout
-    bits = bits + '1'
-    timeout = base_timeout
-
-
-def zero(channel):
-    global bits
-    global timeout
-    bits = bits + '0'
-    timeout = base_timeout
-
-
-def loop():
-    global timeout
-    global bits
-    print('Waiting for data...')
-    while True:
-        if len(bits) > 0:
-            timeout -= 1
-            if timeout == 0:
-                process_card(bits)
-                print('\n{} \nBinary: {}'.format(datetime.utcnow(), bits))
-                bits = ''
-                timeout = base_timeout
-        time.sleep(.001)
-
-
-def process_card(binary):
-    results = search_db(binary)
-    if results[0] == True:
-        print('Allowed')
-        unlock_door()
-        entry_log(True, binary, results[1])
-    else:
-        print('Disallowed')
-        entry_log(False, binary)
-
-
-def search_db(bit_query):
-    con = sqlite3.connect(db_path)
-    with con:
-        cur = con.cursor()
-        cur.execute(
-            'SELECT Name, Status FROM cardlist WHERE Binary = ?', [bit_query])
-        all_rows = cur.fetchall()
-        if all_rows == []:
-            print('No results found.')
-            return [False]
-        else:
-            for row in all_rows:
-                print('Card read from:', row[0])
-                return (row[1], row[0])
-
-
-def entry_log(status, binary, name=None):
-    con = sqlite3.connect(db_path)
-    with con:
-        cur = con.cursor()
-        cur.execute('''INSERT INTO log (Date, EntryStatus, Name, Binary)
-                       VALUES(?,?,?,?)''', (datetime.utcnow(), str(status),
-                                            name, binary))
-
-
-def unlock_door():
-    servo.set_servo(servo_pin, servo_range[1])  # OPEN
-    time.sleep(4)
-    servo.set_servo(servo_pin, servo_range[0])  # CLOSE
-    time.sleep(1)
-    servo.stop_servo(servo_pin)
+    PWM.set_loglevel(PWM.LOG_LEVEL_ERRORS)
+    servo = PWM.Servo()
 
 
 def sql_setup():
+    if os.path.isfile(db_path) != True:
+        print('Missing Database. Run sql_setup.py script w/o root to create.')
+
     con = sqlite3.connect(db_path)
     with con:
         try:
@@ -128,15 +58,80 @@ def sql_setup():
                 raise
 
 
-def sql_status():
-    if os.path.isfile(db_path) != True:
-        print('Missing Database. Run sql_setup.py script w/o root to create.')
+def one(channel):
+    global bits
+    global timeout
+    bits = bits + '1'
+    timeout = base_timeout
+
+
+def zero(channel):
+    global bits
+    global timeout
+    bits = bits + '0'
+    timeout = base_timeout
+
+
+def loop():
+    global timeout
+    global bits
+    while True:
+        if len(bits) > 0:
+            timeout -= 1
+            if timeout == 0:
+                process_card(bits)
+                bits = ''
+                timeout = base_timeout
+        time.sleep(.001)
+
+
+def process_card(binary):
+    name, status = auth_status(binary)
+    if status == True:
+        print('Allowed "{}" entry.'.format(name))
+        unlock_door()
+        log(status, binary, name)
+    else:
+        print('Disallowed:', binary)
+        log(False, binary)
+
+
+def auth_status(bit_query):
+    con = sqlite3.connect(db_path)
+    with con:
+        cur = con.cursor()
+        cur.execute(
+            'SELECT Name, Status FROM cardlist WHERE Binary = ?', [bit_query])
+        row = cur.fetchone()
+        if row is None:
+            return 'Unknown', False
+        else:
+            name, status = row
+            return name, bool(status)
+
+
+def log(status, binary, name=None):
+    con = sqlite3.connect(db_path)
+    with con:
+        cur = con.cursor()
+        cur.execute('''INSERT INTO log (Date, EntryStatus, Name, Binary)
+                       VALUES(?,?,?,?)''', (datetime.utcnow(), status,
+                                            name, binary))
+
+
+def unlock_door():
+    print('Unlocking...')
+    servo.set_servo(servo_pin, servo_range[1])  # OPEN
+    time.sleep(4)
+    servo.set_servo(servo_pin, servo_range[0])  # CLOSE
+    time.sleep(1)
+    servo.stop_servo(servo_pin)
 
 
 def main():
     try:
-        sql_setup()
         gpio_setup()
+        sql_setup()
         sql_status()
         loop()
     except KeyboardInterrupt:

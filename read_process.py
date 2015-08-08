@@ -35,28 +35,25 @@ def gpio_setup():
 def sql_setup():
     if os.path.isfile(db_path) != True:
         print('Missing Database. Run sql_setup.py script w/o root to create.')
-# TODO: Simplify checking if file exists and if tables exist within
     con = sqlite3.connect(db_path)
     with con:
-        try:
-            cur = con.cursor()
-            cur.execute('''CREATE TABLE cardlist (Date TEXT,
-                                                  Binary TEXT,
-                                                  Name TEXT,
-                                                  Status BOOLEAN)''')
-        except Exception as e:
-            if str(e) == 'table cardlist already exists':
-                print('cardlist table exists')
-            else:
-                raise
-        try:
-            cur = con.cursor()
-            cur.execute('CREATE TABLE log (Date, EntryStatus, Name, Binary)')
-        except Exception as e:
-            if str(e) == 'table log already exists':
-                print('Log table exists')
-            else:
-                raise
+        cur = con.cursor()
+        cur.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='cardlist'")
+        cardlist_exists = cur.fetchone()
+        if cardlist_exists[0] == 'cardlist':
+            pass
+        else:
+            print('Missing cardlist table. Run sql_setup.')
+            exit(1)
+
+        cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='log'")
+        log_exists = cur.fetchone()
+        if log_exists[0] == 'log':
+            pass
+        else:
+            print('Missing log table. Run sql_setup.')
+            exit(1)
 
 
 def one(channel):
@@ -76,6 +73,7 @@ def zero(channel):
 def loop():
     global timeout
     global bits
+    print('Ready')
     while True:
         if len(bits) > 0:
             timeout -= 1

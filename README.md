@@ -7,8 +7,10 @@ Expands upon [simple_wiegand](http://github.com/chdsbd/simple_wiegand) script to
 ### TO DO:
 - [x] Finish doorknob clamp model
 - [x] Make clamp from foam board and test **(success)**
-- [ ] Make clamp out of plywood and test
-  - [ ] Make clamp from plexiglass if plywood fails
+- [x] Make clamp out of plywood and test **(worked)**
+    - Plywood worked on its own okay
+    - Added pieces of drawer liner to provide better connection between wood and metal - rock solid after that
+- [ ] ~~Make clamp from plexiglass if plywood fails~~
 - [ ] Test completed doorknob turning mechanism with servo
 
 

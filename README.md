@@ -10,7 +10,11 @@ Expands upon [simple_wiegand](http://github.com/chdsbd/simple_wiegand) script to
 - [x] Make clamp out of plywood and test **(worked)**
     - Plywood worked on its own okay
     - Added pieces of drawer liner to provide better connection between wood and metal - rock solid after that
-- [ ] ~~Make clamp from plexiglass if plywood fails~~
+- [x] ~~Make clamp from Lexan (polycarbonate) if plywood fails~~ (Wood didn't fail)
+    - Lexan seems more resilient to cracking from bending than plywood
+    - Seemed to grip well without needing a cushion layer
+    - A little dab of glue might be useful to maintain connection to door knob or a command hook adhesive
+    - Thinner than plywood (Lexan 0.093in vs plywood .25)
 - [ ] Test completed doorknob turning mechanism with servo
 
 

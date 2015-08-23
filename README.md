@@ -15,7 +15,12 @@ Expands upon [simple_wiegand](http://github.com/chdsbd/simple_wiegand) script to
     - Seemed to grip well without needing a cushion layer
     - A little dab of glue might be useful to maintain connection to door knob or a command hook adhesive
     - Thinner than plywood (Lexan 0.093in vs plywood .25)
-- [ ] Test completed doorknob turning mechanism with servo
+- [x] Test completed doorknob turning mechanism with servo **(worked)**
+    - Polycarbonate gripped doorknob well while servo turned it
+    - Issue: Attaching servo to door with velcro/blue tape will not hold up for long (blue tape peals back)
+    - Issue: Servo arm attaches at angle to polycarbonate clamp, causes twisting and pulls back velcro
+- [ ] Make perminant mount for servo from plywood/polycarbonate/acrylic/foamed pvc
+- [ ] Test servo mount with whole system
 
 
 ### Potential Expansions

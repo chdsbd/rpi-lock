@@ -21,7 +21,9 @@ Expands upon [simple_wiegand](http://github.com/chdsbd/simple_wiegand) script to
     - Issue: Servo arm attaches at angle to polycarbonate clamp that causes twisting and pulls back velcro
 - [ ] Make permanent mount for servo from plywood/polycarbonate/acrylic/foamed pvc
 - [ ] Test servo mount with whole system
-- [ ] Added tests for python
+- [ ] Add tests for python
+- [ ] Add proper logging and change how adding cards work
+- [ ] Simplify interface for potential web control
 
 
 ### Potential Expansions

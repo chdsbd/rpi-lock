@@ -19,8 +19,11 @@ Expands upon [simple_wiegand](http://github.com/chdsbd/simple_wiegand) script to
     - Polycarbonate gripped doorknob well while the servo turned it
     - Issue: Attaching servo to door with velcro/blue tape will not hold for long (blue tape peals back)
     - Issue: Servo arm attaches at angle to polycarbonate clamp that causes twisting and pulls back velcro
-- [ ] Make permanent mount for servo from plywood/polycarbonate/acrylic/foamed pvc
-- [ ] Test servo mount with whole system
+- [x] Make permanent mount for servo from plywood/polycarbonate/acrylic/foamed pvc
+    - Made mount from layers of plywood. Laser cutting polycarbonate would have been preferred.
+- [x] Test servo mount with whole system
+    - Mounted servo on door using refill 3M Command strips. The strips make a super strong connection and are not remotely a weak point.
+    - After running a servo test script continuously for a few minutes I noticed some jitter in the servo. It doesn't cause issues with the lock, but it is something that needs to be looked at. I attribute this issue to the RPIO module.
 - [ ] Add tests for python
 - [ ] Add proper logging and change how adding cards work
 - [ ] Simplify interface for potential web control

@@ -24,6 +24,8 @@ Expands upon [simple_wiegand](http://github.com/chdsbd/simple_wiegand) script to
 - [x] Test servo mount with whole system
     - Mounted servo on door using refill 3M Command strips. The strips make a super strong connection and are not remotely a weak point.
     - After running a servo test script continuously for a few minutes I noticed some jitter in the servo. It doesn't cause issues with the lock, but it is something that needs to be looked at. I attribute this issue to the RPIO module.
+    - servo horn needs to be screwed into servo. It fell off while testing.
+- [ ] Create plywood servo arm and attach servo horn to servo via screw
 - [ ] Add tests for python
 - [ ] Add proper logging and change how adding cards work
 - [ ] Simplify interface for potential web control

@@ -71,7 +71,11 @@ def add_user():
 
 @app.route('/log')
 def show_log():
-    pass
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    cur = g.db.execute('select date, name, binary, status from log')
+    log = [dict(date=row[0], name=row[1], binary=row[2], status=row[3]) for row in cur.fetchall()]
+    return render_template('show_log.html', log=log)
 
 if __name__ == '__main__':
     app.debug = True

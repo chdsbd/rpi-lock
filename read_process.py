@@ -13,7 +13,7 @@ from RPIO import PWM
 data1 = 7  # DATA1 (White) PIN
 data0 = 11  # DATA0 (Green) PIN
 servo_pin = 27
-servo_range = [1500, 1300]  # Left, Right (2300 Max, 500 Min)
+servo_range = [600, 1300]  # Left, Right (2300 Max, 500 Min)
 db_path = 'card_database.db'
 base_timeout = 5
 
@@ -124,7 +124,7 @@ def unlock_door():
     time.sleep(4)
     print('Locking...')
     servo.set_servo(servo_pin, servo_range[0])  # CLOSE
-    time.sleep(1)
+    time.sleep(2)
     servo.stop_servo(servo_pin)
 
 

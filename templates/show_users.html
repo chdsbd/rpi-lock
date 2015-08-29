@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
   {% if session.logged_in %}
+    <h2>Add new user</h2>
     <form action="{{ url_for('add_user') }}" method=post class=add-user>
       <dl>
         <dt>Name:

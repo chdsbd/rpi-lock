@@ -33,6 +33,8 @@ def teardown_request(exception):
 
 @app.route('/')
 def show_users():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
     cur = g.db.execute('select name, binary, status from users order by id desc')
     users = [dict(name=row[0], binary=row[1], status=row[2]) for row in cur.fetchall()]
     return render_template('show_users.html', users=users)
@@ -59,6 +61,8 @@ def logout():
 
 @app.route('/add', methods=['POST'])
 def add_user():
+    if not session.get('logged_in'):
+        abort(401)
     g.db.execute('insert into users (name, binary, status) values (?, ?, ?)',
                  [request.form['name'], request.form['binary'], request.form['status']])
     g.db.commit()

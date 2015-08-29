@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <form action="{{ url_for('add_user') }}" method=post class=add-user>
+      <dl>
+        <dt>Name:
+        <dd><input type=text size=30 placeholder="User Name" name=name>
+        <dt>Binary:
+        <dd><input type=text size=30 name=binary placeholder="01001001011100100100101001001011100100110010010111001001">
+        <dt>Status:
+        <dd><input type=radio name=status value="True">Allow Access
+        <dd><input type=radio name=status value="False">Deny Access
+        <dd><input type=submit value=Submit>
+      </dl>
+    </form>
+  {% endif %}
+  <ul class=users>
+  {% for user in users %}
+    <li><h2>{{ user.name }}</h2>{{ user.binary }}
+  {% else %}
+    <li><em>No users created</em>
+  {% endfor %}
+  </ul>
+{% endblock %}

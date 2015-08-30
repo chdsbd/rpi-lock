@@ -86,6 +86,14 @@ def show_log():
     log = [dict(id=row[0], date=row[1], name=row[2], binary=row[3], status=row[4]) for row in cur.fetchall()]
     return render_template('show_log.html', log=log)
 
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(405)
+def page_not_found(error):
+    return render_template('405.html'), 405
+
 if __name__ == '__main__':
     app.debug = True
     app.run('0.0.0.0')

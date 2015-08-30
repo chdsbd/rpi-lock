@@ -20,10 +20,12 @@
   </head>
   <body>
 <!-- Nav bar -->
+{% if session.logged_in %}
 {% set navigation_bar = [
     ('/', 'users', 'Users'),
     ('/log', 'log', 'Log')
 ] -%}
+{% endif %}
 {% set active_page = active_page|default('index') -%}
       <nav class="navbar navbar-default">
           <div class="container-fluid">
@@ -50,10 +52,6 @@
       {% if session.logged_in %}
       <ul class="nav navbar-nav navbar-right">
         <li><a href="{{ url_for('logout')}}">Sign Out</a></li>
-      </ul>
-      {% else %}
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="{{ url_for('login')}}">Sign In</a></li>
       </ul>
       {% endif %}
     </div><!-- /.navbar-collapse -->

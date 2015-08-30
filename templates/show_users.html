@@ -15,7 +15,7 @@
   </div>
   <div class="form-group">
     <label for="InputBinary">Binary</label>
-    <input type="text" class="form-control" required id="InputBinary" name="binary" placeholder="0010101010101010101" vale="test">
+    <input type="text" class="form-control" required id="InputBinary" name="binary" placeholder="0010101010101010101">
   </div>
   {% if binary %}
   <script>document.getElementById("InputBinary").defaultValue = "{{ binary }}";</script>
@@ -30,6 +30,7 @@
           <th>Name</th>
           <th>Device</th>
           <th>Binary</th>
+          <th>Action</th>
       </tr>
     {% for user in users %}
       <tr>
@@ -37,6 +38,9 @@
           <td>{{ user.name }}
           <td>{{ user.device }}
           <td>{{ user.binary }}
+          <td><form action="{{ url_for('delete_user') }}" method=post>
+                <button type="submit" name="user_id" value="{{ user.id }}" class="btn btn-warning">Delete</button>
+              </form>
       </tr>
     {% endfor %}
     </table>

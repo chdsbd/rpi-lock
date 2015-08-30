@@ -65,6 +65,7 @@ def logout():
     return redirect(url_for('show_users'))
 
 def form_validator(form_values):
+    result = True
     for key, value in form_values.iteritems():
         if len(value) <=0:
             flash(u'{} is below min value'.format(key), 'error')
@@ -96,9 +97,11 @@ def add_user():
 def delete_user():
     if not session.get('logged_in'):
         abort(401)
+    print request.form['user_id']
     g.db.execute('delete from users where id=?', [request.form['user_id']])
+    g.db.commit()
     flash('User deleted successfully.')
-    return redirect(url_for(show_users))
+    return redirect(url_for('show_users'))
 
 
 @app.route('/log')
@@ -116,6 +119,14 @@ def page_not_found(error):
 @app.errorhandler(405)
 def page_not_found(error):
     return render_template('405.html'), 405
+
+@app.errorhandler(400)
+def page_not_found(error):
+    return render_template('400.html'), 400
+
+@app.errorhandler(500)
+def page_not_found(error):
+    return render_template('500.html'), 500
 
 if __name__ == '__main__':
     app.debug = True

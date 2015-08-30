@@ -1,4 +1,4 @@
-from flask import Flask, render_template, g, redirect, session, request, flash, url_for
+from flask import Flask, render_template, g, redirect, session, request, flash, url_for, abort
 import sqlite3
 from contextlib import closing
 
@@ -68,6 +68,15 @@ def add_user():
     g.db.commit()
     flash('New entry was successfully posted')
     return redirect(url_for('show_users'))
+
+@app.route('/delete', methods=['POST'])
+def delete_user():
+    if not session.get('logged_in'):
+        abort(401)
+    g.db.execute('delete from users where id=?', [request.form['user_id']])
+    flash('User deleted successfully.')
+    return redirect(url_for(show_users))
+
 
 @app.route('/log')
 def show_log():

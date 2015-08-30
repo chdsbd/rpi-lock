@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block body %}
-  {% if session.logged_in %}
     <h2>Add new user</h2>
     <form action="{{ url_for('add_user') }}" method=post class=add-user>
       <dl>
@@ -14,12 +13,19 @@
         <dd><input type=submit value=Submit>
       </dl>
     </form>
-  {% endif %}
-  <ul class=users>
-  {% for user in users %}
-    <li><h2>{{ user.name }}</h2>{{ user.binary }}
-  {% else %}
-    <li><em>No users created</em>
-  {% endfor %}
-  </ul>
+<h1> Users</h1>
+    <table class="table table-striped">
+      <tr>
+          <th>Name</th>
+          <th>Binary</th>
+          <th>Allowed</th>
+      </tr>
+    {% for user in users %}
+      <tr>
+          <td>{{ user.name }}
+          <td>{{ user.binary }}
+          <td>{{ user.status }}
+      </tr>
+    {% endfor %}
+    </table>
 {% endblock %}

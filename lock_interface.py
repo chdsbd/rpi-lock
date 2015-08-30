@@ -62,15 +62,21 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('show_users'))
+def form_validator(form_values):
+    for value in form_values.values():
+        if len(value) <=0:
+            flash('{} is below min value'.format(value))
+            return False
+        if len(value) >=100:
+            flash('{} exceeds max length'.format(value))
+            return False
 
 @app.route('/add', methods=['POST'])
 def add_user():
     if not session.get('logged_in'):
         abort(401)
-    for item in [request.form['name'], request.form['device'], request.form['binary']]:
-        if len(item) <=0:
-            flash('BAD!')
-            return redirect(url_for('show_users'))
+    if form_validator(request.form) == False:
+        return redirect(url_for('show_users'))
     g.db.execute('insert into users (name, device, binary) values (?, ?, ?)',
                  [request.form['name'], request.form['device'], request.form['binary']])
     g.db.commit()

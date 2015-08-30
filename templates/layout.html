@@ -19,7 +19,6 @@
     <![endif]-->
   </head>
   <body>
-{% if session.logged_in %}
 {% set navigation_bar = [
     ('/', 'users', 'Users'),
     ('/log', 'log', 'Log')
@@ -53,7 +52,6 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
-{% endif %}
 
 <div class="container">
     <div class="row">

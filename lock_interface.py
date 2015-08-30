@@ -37,9 +37,11 @@ def show_users():
         return redirect(url_for('login'))
     cur = g.db.execute('select id, name, device, binary from users order by id desc')
     users = [dict(id=row[0], name=row[1], device=row[2], binary=row[3]) for row in cur.fetchall()]
-    cur = g.db.execute('select binary from log order by id desc')
-    log = cur.fetchone()[0]
-    return render_template('show_users.html', users=users, log=log)
+    cur = g.db.execute('select binary from log')
+    binary = cur.fetchone()
+    if binary:
+        binary = binary[0]
+    return render_template('show_users.html', users=users, binary=binary)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

@@ -2,7 +2,7 @@ create table if not exists users (
 id integer primary key autoincrement,
 name text not null,
 device text not null,
-binary text not null
+binary text not null unique
 );
 create table if not exists log (
 id integer primary key autoincrement,

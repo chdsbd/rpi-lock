@@ -1,6 +1,13 @@
 A Flask base web interface to administer my [rpi_lock](https://github.com/chdsbd/rpi_lock)
 
-#TODO
+# Utilizes
+- [Flask](https://github.com/mitsuhiko/flask)
+- [Jinja2](http://jinja.pocoo.org)
+- [Bootstrap](http://getbootstrap.com)
+- [Sortable](https://github.com/HubSpot/sortable)
+- [Sqlite](https://sqlite.org)
+
+# TODO
 - [x] Ability to add add most recent read to RFID Card to Database
 - [x] Ability to key in data for card access list
 - [x] interface for viewing card access log

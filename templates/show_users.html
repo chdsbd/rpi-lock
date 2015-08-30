@@ -30,7 +30,7 @@
       </tr>
     {% for user in users %}
       <tr>
-          <td> {{ user.id }}
+          <td>{{ user.id }}
           <td>{{ user.name }}
           <td>{{ user.device }}
           <td>{{ user.binary }}
@@ -38,7 +38,7 @@
     {% endfor %}
     </table>
 {% else %}
-<h2 class="warning">No users exist in table.</h2>
+<h2 class="text-warning">No users exist in table.</h2>
 {% endif %}
 </div> <!--container-->
 {% endblock %}

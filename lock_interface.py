@@ -67,16 +67,18 @@ def logout():
 def form_validator(form_values):
     for key, value in form_values.iteritems():
         if len(value) <=0:
-            flash(u'{} is below min value'.format(value), 'error')
-            return False
+            flash(u'{} is below min value'.format(key), 'error')
+            result = False
         if len(value) >=100:
-            flash(u'{} exceeds max length'.format(value), 'error')
-            return False
+            flash(u'{} exceeds max length'.format(key), 'error')
+            result = False
         if key == 'binary':
             for char in value:
                 if char not in ('0', '1'):
-                    flash(u'{} is not binary'.format(value), 'error')
-                    return False
+                    flash(u'String "{}" is not binary'.format(value), 'error')
+                    result = False
+    if result == False:
+        return False
 
 @app.route('/add', methods=['POST'])
 def add_user():

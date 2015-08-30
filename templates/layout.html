@@ -23,7 +23,8 @@
 {% if session.logged_in %}
 {% set navigation_bar = [
     ('/', 'users', 'Users'),
-    ('/log', 'log', 'Log')
+    ('/log', 'log', 'Log'),
+    ('/rpi', 'rpi', 'RPi Status')
 ] -%}
 {% endif %}
 {% set active_page = active_page|default('index') -%}
@@ -46,6 +47,11 @@
           <li {% if id == active_page %} class="active"{% endif
             %}><a href="{{ href|e }}">{{ caption|e }}</a></li>
         {% endfor %}
+            <li>
+              <form class="navbar-form navbar-left" type="Input">
+                <input type="button" value="input" class="btn btn-primary">
+              </form>
+            </li>
           </ul>
         </li>
       </ul>

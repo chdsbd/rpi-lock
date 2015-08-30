@@ -1,0 +1,22 @@
+{% extends "layout.html" %} {% set active_page = "rpi" %} {% block body %}
+<div class="container">
+    <h1>Raspberry Pi Status Page</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <h3>Raspberry Pi
+                <span class="label label-success">Normal</span>
+            </h3>
+        </div>
+        <div class="col-md-4">
+            <h3>Wiegand Processing
+                <span class="label label-success">Normal</span>
+            </h3>
+        </div>
+        <div class="col-md-4">
+            <h3>Web Server
+                <span class="label label-success">Normal</span>
+            </h3>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -113,6 +113,12 @@ def show_log():
     log = [dict(id=row[0], date=row[1], name=row[2], binary=row[3], status=row[4]) for row in cur.fetchall()]
     return render_template('show_log.html', log=log)
 
+@app.route('/rpi')
+def rpi_status():
+    if not session.get('logged_in'):
+        return redirect(url_for(login))
+    return render_template('rpi.html')
+
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404

@@ -4,7 +4,7 @@ A Flask base web interface to administer my [rpi_lock](https://github.com/chdsbd
 - [x] Ability to add add most recent read to RFID Card to Database
 - [x] Ability to key in data for card access list
 - [x] interface for viewing card access log
-- [ ] Validate form input
+- [x] Validate form input
 - [ ] Add ability to delete users
 - [ ] interface for card access list
 - [ ] must interact with remote tables

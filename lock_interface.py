@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import Flask, render_template, g, redirect, session, request, flash, url_for, abort
 import sqlite3
 from contextlib import closing
@@ -62,14 +63,20 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('show_users'))
+
 def form_validator(form_values):
-    for value in form_values.values():
+    for key, value in form_values.iteritems():
         if len(value) <=0:
-            flash('{} is below min value'.format(value))
+            flash(u'{} is below min value'.format(value), 'error')
             return False
         if len(value) >=100:
-            flash('{} exceeds max length'.format(value))
+            flash(u'{} exceeds max length'.format(value), 'error')
             return False
+        if key == 'binary':
+            for char in value:
+                if char not in ('0', '1'):
+                    flash(u'{} is not binary'.format(value), 'error')
+                    return False
 
 @app.route('/add', methods=['POST'])
 def add_user():

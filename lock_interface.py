@@ -35,8 +35,8 @@ def teardown_request(exception):
 def show_users():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-    cur = g.db.execute('select name, binary, status from users order by id desc')
-    users = [dict(name=row[0], binary=row[1], status=row[2]) for row in cur.fetchall()]
+    cur = g.db.execute('select name, device, binary from users order by id desc')
+    users = [dict(name=row[0], device=row[1], binary=row[2]) for row in cur.fetchall()]
     return render_template('show_users.html', users=users)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -63,8 +63,8 @@ def logout():
 def add_user():
     if not session.get('logged_in'):
         abort(401)
-    g.db.execute('insert into users (name, binary, status) values (?, ?, ?)',
-                 [request.form['name'], request.form['binary'], request.form['status']])
+    g.db.execute('insert into users (name, device, binary) values (?, ?, ?)',
+                 [request.form['name'], request.form['device'], request.form['binary']])
     g.db.commit()
     flash('New entry was successfully posted')
     return redirect(url_for('show_users'))
@@ -82,8 +82,8 @@ def delete_user():
 def show_log():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-    cur = g.db.execute('select date, name, binary, status from log')
-    log = [dict(date=row[0], name=row[1], binary=row[2], status=row[3]) for row in cur.fetchall()]
+    cur = g.db.execute('select id, date, name, binary, status from log')
+    log = [dict(id=row[0], date=row[1], name=row[2], binary=row[3], status=row[4]) for row in cur.fetchall()]
     return render_template('show_log.html', log=log)
 
 if __name__ == '__main__':

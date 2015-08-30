@@ -20,6 +20,11 @@
   </head>
   <body>
 {% if session.logged_in %}
+{% set navigation_bar = [
+    ('/', 'users', 'Users'),
+    ('/log', 'log', 'Log')
+] -%}
+{% set active_page = active_page|default('index') -%}
       <nav class="navbar navbar-default">
           <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -30,13 +35,15 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="#">RFID Door Lock</a>
+              <a class="navbar-brand" href="/">RFID Door Lock</a>
             </div>
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Users <span class="sr-only">(current)</span></a></li>
-        <li><a href="#">Log</a></li>
+        {% for href, id, caption in navigation_bar %}
+          <li {% if id == active_page %} class="active"{% endif
+            %}><a href="{{ href|e }}">{{ caption|e }}</a></li>
+        {% endfor %}
           </ul>
         </li>
       </ul>
@@ -47,17 +54,19 @@
   </div><!-- /.container-fluid -->
 </nav>
 {% endif %}
+
 <div class="container">
     <div class="row">
         {% for message in get_flashed_messages() %}
-          <div class=flash>{{ message }}</div>
+        <div class="alert alert-success alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Success:</strong> {{ message }}
+        </div>
         {% endfor %}
     </div>
-    <div class="row">
-        {% block body %}
-        {% endblock %}
-    </div>
 </div>
+{% block body %}
+{% endblock %}
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

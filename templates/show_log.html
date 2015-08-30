@@ -1,11 +1,28 @@
 {% extends "layout.html" %}
+{% set active_page = "log" %}
 {% block body %}
-  <ul class=users>
+<div class="container">
+<h1>Door Lock Access Log</h1>
+{% if log %}
+  <table class="table table-default table-condensed">
+    <tr>
+        <th>#</th>
+        <th>Date</th>
+        <th>Name</th>
+        <th>Binary</th>
+        <th>Allowed</th>
+    </tr>
   {% for attempt in log %}
-    <li><h2>{{ attempt.name }}</h2>{{ attempt.binary }}
-    <li>{{ attempt.date}}
-  {% else %}
-    <li><em>No users created</em>
+    <tr>
+        <td>{{ attempt.id }}
+        <td>{{ attempt.date}}
+        <td>{{ attempt.name }}
+        <td>{{ attempt.binary }}
+        <td>{{ attempt.status }}
+    </tr>
   {% endfor %}
-  </ul>
+{% else %}
+<h2>Access log is empty.</h2>
+{% endif %}
+</div>
 {% endblock %}

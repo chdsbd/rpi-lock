@@ -67,6 +67,10 @@ def logout():
 def add_user():
     if not session.get('logged_in'):
         abort(401)
+    for item in [request.form['name'], request.form['device'], request.form['binary']]:
+        if len(item) <=0:
+            flash('BAD!')
+            return redirect(url_for('show_users'))
     g.db.execute('insert into users (name, device, binary) values (?, ?, ?)',
                  [request.form['name'], request.form['device'], request.form['binary']])
     g.db.commit()

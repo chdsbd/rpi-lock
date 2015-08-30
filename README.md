@@ -13,3 +13,4 @@ A Flask base web interface to administer my [rpi_lock](https://github.com/chdsbd
 - [ ] Button to unlock door
 - [ ] Rpi status
 - [ ] wiegand read_process status
+- [ ] Customize flash() to show red for errors

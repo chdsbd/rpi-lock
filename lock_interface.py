@@ -1,5 +1,8 @@
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, g, redirect, session, request, flash, url_for, abort
+
+from flask import Flask, render_template, g, redirect, session, request, \
+                flash, url_for, abort
 import sqlite3
 from contextlib import closing
 
@@ -36,8 +39,12 @@ def teardown_request(exception):
 def show_users():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-    cur = g.db.execute('select id, name, device, binary from users order by id desc')
-    users = [dict(id=row[0], name=row[1], device=row[2], binary=row[3]) for row in cur.fetchall()]
+    cur = g.db.execute('''select id, name, device, binary from users 
+                          order by id desc''')
+    users = [dict(id=row[0],
+                  name=row[1],
+                  device=row[2],
+                  binary=row[3]) for row in cur.fetchall()]
     cur = g.db.execute('select binary from log')
     binary = cur.fetchone()
     if binary:
@@ -67,11 +74,11 @@ def logout():
 def form_validator(form_values):
     result = True
     for key, value in form_values.iteritems():
-        if len(value) <=0:
+        if len(value) <= 0:
             if key != 'note':
                 flash(u'{} is below min value'.format(key), 'error')
                 result = False
-        if len(value) >=100:
+        if len(value) >= 100:
             flash(u'{} exceeds max length'.format(key), 'error')
             result = False
         if key == 'binary':
@@ -79,8 +86,8 @@ def form_validator(form_values):
                 if char not in ('0', '1'):
                     flash(u'String "{}" is not binary'.format(value), 'error')
                     result = False
-    if result == False:
-        return False
+                    break
+    return result
 
 @app.route('/add', methods=['POST'])
 def add_user():
@@ -89,7 +96,9 @@ def add_user():
     if form_validator(request.form) == False:
         return redirect(url_for('show_users'))
     g.db.execute('insert into users (name, device, binary) values (?, ?, ?)',
-                 [request.form['name'], request.form['note'], request.form['binary']])
+                 [request.form['name'],
+                  request.form['note'],
+                  request.form['binary']])
     g.db.commit()
     flash('New entry was successfully posted')
     return redirect(url_for('show_users'))
@@ -110,7 +119,11 @@ def show_log():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     cur = g.db.execute('select id, date, name, binary, status from log')
-    log = [dict(id=row[0], date=row[1], name=row[2], binary=row[3], status=row[4]) for row in cur.fetchall()]
+    log = [dict(id=row[0],
+                date=row[1],
+                name=row[2],
+                binary=row[3],
+                status=row[4]) for row in cur.fetchall()]
     return render_template('show_log.html', log=log)
 
 @app.errorhandler(404)

@@ -35,8 +35,8 @@ def teardown_request(exception):
 def show_users():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-    cur = g.db.execute('select name, device, binary from users order by id desc')
-    users = [dict(name=row[0], device=row[1], binary=row[2]) for row in cur.fetchall()]
+    cur = g.db.execute('select id, name, device, binary from users order by id desc')
+    users = [dict(id=row[0], name=row[1], device=row[2], binary=row[3]) for row in cur.fetchall()]
     return render_template('show_users.html', users=users)
 
 @app.route('/login', methods=['GET', 'POST'])

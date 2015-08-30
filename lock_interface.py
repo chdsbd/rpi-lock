@@ -68,8 +68,9 @@ def form_validator(form_values):
     result = True
     for key, value in form_values.iteritems():
         if len(value) <=0:
-            flash(u'{} is below min value'.format(key), 'error')
-            result = False
+            if key != 'note':
+                flash(u'{} is below min value'.format(key), 'error')
+                result = False
         if len(value) >=100:
             flash(u'{} exceeds max length'.format(key), 'error')
             result = False
@@ -88,7 +89,7 @@ def add_user():
     if form_validator(request.form) == False:
         return redirect(url_for('show_users'))
     g.db.execute('insert into users (name, device, binary) values (?, ?, ?)',
-                 [request.form['name'], request.form['device'], request.form['binary']])
+                 [request.form['name'], request.form['note'], request.form['binary']])
     g.db.commit()
     flash('New entry was successfully posted')
     return redirect(url_for('show_users'))

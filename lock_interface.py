@@ -69,11 +69,11 @@ def form_validator(form_values):
 def show_users():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-    cur = g.db.execute('''select id, name, device, binary from users 
+    cur = g.db.execute('''select id, name, note, binary from users
                           order by id desc''')
     users = [dict(id=row[0],
                   name=row[1],
-                  device=row[2],
+                  note=row[2],
                   binary=row[3]) for row in cur.fetchall()]
     cur = g.db.execute('select binary from log')
     binary = cur.fetchone()
@@ -107,7 +107,7 @@ def add_user():
         abort(401)
     if form_validator(request.form) == False:
         return redirect(url_for('show_users'))
-    g.db.execute('insert into users (name, device, binary) values (?, ?, ?)',
+    g.db.execute('insert into users (name, note, binary) values (?, ?, ?)',
                  [request.form['name'],
                   request.form['note'],
                   request.form['binary']])

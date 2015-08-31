@@ -29,7 +29,7 @@
             <tr>
                 <th data-sorted="true" data-sorted-direction="descending">ID #</th>
                 <th>Name</th>
-                <th>Device</th>
+                <th>Note</th>
                 <th data-sortable="false">Binary</th>
                 <th data-sortable="false">Action</th>
             </tr>
@@ -40,7 +40,7 @@
             <tr>
                 <td>{{ user.id }}</td>
                 <td>{{ user.name }}</td>
-                <td>{{ user.device }}</td>
+                <td>{{ user.note }}</td>
                 <td>{{ user.binary }}</td>
                 <td><form action="{{ url_for('delete_user') }}" method=post>
                         <button type="submit" name="user_id" value="{{ user.id }}" class="btn btn-warning">Delete</button>

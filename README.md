@@ -24,3 +24,5 @@ A Flask base web interface to administer my [rpi_lock](https://github.com/chdsbd
 - [x] Customize flash() to show red for errors
 - [x] Add tests
 - [x] Add Travis-ci
+- [ ] Make the deletion of users not cause an entire page reload
+- [ ] Make the addition of a user not cause an entire page reload

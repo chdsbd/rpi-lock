@@ -2,51 +2,56 @@
 {% set active_page = "users" %}
 {% block body %}
 <div class="container">
-<h1>Users</h1>
-<h3>Add User</h3>
-<form action="{{ url_for('add_user') }}" method=post class="form-inline">
-  <div class="form-group">
-    <label for="InputName">Name</label>
-    <input type="text" class="form-control" required minlength="1" id="InputName" name="name" placeholder="John Doe">
-  </div>
-  <div class="form-group">
-    <label for="InputDevice">Notes</label>
-    <input type="text" class="form-control" required id="InputNote" name="note" placeholder="Wallet/Backup">
-  </div>
-  <div class="form-group">
-    <label for="InputBinary">Binary</label>
-    <input type="text" class="form-control" required id="InputBinary" name="binary" placeholder="0010101010101010101">
-  </div>
-  {% if binary %}
-  <!--Input the most recent data from the log-->
-  <script>document.getElementById("InputBinary").defaultValue = "{{ binary }}";</script>
-  {% endif %}
-  <button type="submit" class="btn btn-default" value="Submit">Add User</button>
-</form>
-</br>
-{% if users %}
-    <table class="table table-striped">
-      <tr>
-          <th>ID #</th>
-          <th>Name</th>
-          <th>Device</th>
-          <th>Binary</th>
-          <th>Action</th>
-      </tr>
-    {% for user in users %}
-      <tr>
-          <td>{{ user.id }}
-          <td>{{ user.name }}
-          <td>{{ user.device }}
-          <td>{{ user.binary }}
-          <td><form action="{{ url_for('delete_user') }}" method=post>
-                <button type="submit" name="user_id" value="{{ user.id }}" class="btn btn-warning">Delete</button>
-              </form>
-      </tr>
-    {% endfor %}
+    <h1>Users</h1>
+    <h3>Add User</h3>
+    <form action="{{ url_for('add_user') }}" method=post class="form-inline">
+        <div class="form-group">
+            <label for="InputName">Name</label>
+            <input type="text" class="form-control" required minlength="1" id="InputName" name="name" placeholder="John Doe">
+        </div>
+        <div class="form-group">
+            <label for="InputDevice">Notes</label>
+            <input type="text" class="form-control" required id="InputNote" name="note" placeholder="Wallet/Backup">
+        </div>
+        <div class="form-group">
+            <label for="InputBinary">Binary</label>
+            <input type="text" class="form-control" required id="InputBinary" name="binary" placeholder="0010101010101010101">
+        </div>
+        {% if binary %}
+        <script>document.getElementById("InputBinary").defaultValue = "{{ binary }}";</script>
+        {% endif %}
+        <button type="submit" class="btn btn-default" value="Submit">Add User</button>
+    </form>
+    </br>
+    {% if users %}
+    <table class="table table-striped sortable-theme-bootstrap" data-sortable>
+        <thead>
+            <tr>
+                <th data-sorted="true" data-sorted-direction="descending">ID #</th>
+                <th>Name</th>
+                <th>Device</th>
+                <th>Binary</th>
+                <th data-sortable="false">Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.device }}</td>
+                <td>{{ user.binary }}</td>
+                <td><form action="{{ url_for('delete_user') }}" method=post>
+                        <button type="submit" name="user_id" value="{{ user.id }}" class="btn btn-warning">Delete</button>
+                </form></td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
     </table>
-{% else %}
-<h2 class="text-warning">No users exist in table.</h2>
-{% endif %}
+    {% else %}
+    <h2 class="text-warning">No users exist in table.</h2>
+    {% endif %}
 </div> <!--container-->
 {% endblock %}

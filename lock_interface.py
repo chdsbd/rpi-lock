@@ -129,12 +129,12 @@ def show_log():
                 status=row[4]) for row in cur.fetchall()]
     return render_template('show_log.html', log=log)
 
-@app.route('/rpi')
-def rpi_status():
+@app.route('/status')
+def status():
     if not session.get('logged_in'):
         return redirect(url_for(login))
-    rpi = dict(rfid=os.path.isfile(RFID_STATUS_FILE), net=have_internet())
-    return render_template('rpi.html', rpi=rpi)
+    status = dict(rfid=os.path.isfile(RFID_STATUS_FILE), net=have_internet())
+    return render_template('status.html', status=status)
 
 def have_internet():
     conn = httplib.HTTPConnection("www.google.com")

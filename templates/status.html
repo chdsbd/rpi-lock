@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
-{% set active_page = "rpi" %}
+{% set active_page = "status" %}
 {% block body %}
 <div class="container">
-    <h1>Raspberry Pi Status Page</h1>
+    <h1>Status Page</h1>
     <!-- <h4><em>Note: Item statuses are refreshed on page load</em></h4> -->
     <div class="row">
         <div class="col-md-6">
             <h3>RFID Reader
-                {% if rpi.rfid == True %}
+                {% if status.rfid == True %}
                 <span class="label label-success">Normal</span>
                 {% else %}
                 <span class="label label-warning">Problems</span>
@@ -16,7 +16,7 @@
         </div>
         <div class="col-md-6">
             <h3>Internet Connection
-                {% if rpi.net == True %}
+                {% if status.net == True %}
                 <span class="label label-success">Normal</span>
                 {% else %}
                 <span class="label label-warning">Problems</span>

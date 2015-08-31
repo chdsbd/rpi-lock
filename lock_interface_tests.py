@@ -71,7 +71,6 @@ class LockInterfaceTestCase(unittest.TestCase):
             user_id = 1))
         rv = self.app.get('/')
         assert 'User deleted successfully.' in rv.data
-
         self.app.post('/add', data=dict(
            name = '',
            note = '',

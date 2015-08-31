@@ -21,4 +21,5 @@ A Flask base web interface to administer my [rpi_lock](https://github.com/chdsbd
 - [ ] Rpi status
 - [ ] wiegand read_process status
 - [x] Customize flash() to show red for errors
-- [ ] Add tests
+- [x] Add tests
+- [ ] Add Travis-ci

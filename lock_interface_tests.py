@@ -78,6 +78,15 @@ class LockInterfaceTestCase(unittest.TestCase):
         rv = self.app.get('/')
         assert ('name is below min value' and \
                 'binary is below min value')  in rv.data
+    def test_status_page(self):
+        self.login(lock_interface.USERNAME, lock_interface.PASSWORD)
+        rv = self.app.get('/status')
+        assert 'Status Page' in rv.data
+
+    def test_log_page(self):
+        self.login(lock_interface.USERNAME, lock_interface.PASSWORD)
+        rv = self.app.get('/log')
+        assert 'Door Lock Access Log' in rv.data
 
 if __name__ == '__main__':
     unittest.main()

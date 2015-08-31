@@ -39,6 +39,32 @@ def teardown_request(exception):
     if db is not None:
         db.close()
 
+def have_internet():
+    conn = httplib.HTTPConnection("www.google.com")
+    try:
+        conn.request("HEAD", "/")
+        return True
+    except:
+        return False
+
+def form_validator(form_values):
+    result = True
+    for key, value in form_values.iteritems():
+        if len(value) <= 0:
+            if key != 'note':
+                flash(u'{} is below min value'.format(key), 'warning')
+                result = False
+        if len(value) >=100:
+            flash(u'{} exceeds max length'.format(key), 'warning')
+            result = False
+        if key == 'binary':
+            for char in value:
+                if char not in ('0', '1'):
+                    flash(u'String "{}" is not binary'.format(value), 'warning')
+                    result = False
+                    break
+    return result
+
 @app.route('/')
 def show_users():
     if not session.get('logged_in'):
@@ -74,24 +100,6 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('show_users'))
-
-def form_validator(form_values):
-    result = True
-    for key, value in form_values.iteritems():
-        if len(value) <= 0:
-            if key != 'note':
-                flash(u'{} is below min value'.format(key), 'warning')
-                result = False
-        if len(value) >=100:
-            flash(u'{} exceeds max length'.format(key), 'warning')
-            result = False
-        if key == 'binary':
-            for char in value:
-                if char not in ('0', '1'):
-                    flash(u'String "{}" is not binary'.format(value), 'warning')
-                    result = False
-                    break
-    return result
 
 @app.route('/add', methods=['POST'])
 def add_user():
@@ -135,14 +143,6 @@ def status():
         return redirect(url_for(login))
     status = dict(rfid=os.path.isfile(RFID_STATUS_FILE), net=have_internet())
     return render_template('status.html', status=status)
-
-def have_internet():
-    conn = httplib.HTTPConnection("www.google.com")
-    try:
-        conn.request("HEAD", "/")
-        return True
-    except:
-        return False
 
 @app.route('/unlock', methods=['POST'])
 def unlock_door():

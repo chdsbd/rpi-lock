@@ -4,14 +4,17 @@
 <div class="container">
 <h1>Door Lock Access Log</h1>
 {% if log %}
-  <table class="table table-default table-condensed">
+    <table class="table table-striped sortable-theme-bootstrap" data-sortable>
+    <thead>
     <tr>
         <th>#</th>
         <th>Date</th>
         <th>Name</th>
-        <th>Binary</th>
-        <th>Allowed</th>
+        <th data-sortable="false">Binary</th>
+        <th data-sortable="false">Allowed</th>
     </tr>
+</thead>
+<tbody>
   {% for attempt in log %}
     <tr>
         <td>{{ attempt.id }}
@@ -21,6 +24,7 @@
         <td>{{ attempt.status }}
     </tr>
   {% endfor %}
+  </tbody>
 {% else %}
 <h2 class="text-warning">Access log is empty.</h2>
 {% endif %}

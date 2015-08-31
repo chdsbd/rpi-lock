@@ -1,3 +1,4 @@
+# rpi_flask_interface [![Build Status](https://travis-ci.org/chdsbd/rpi_flask_interface.svg)](https://travis-ci.org/chdsbd/rpi_flask_interface)
 A Flask base web interface to administer my [rpi_lock](https://github.com/chdsbd/rpi_lock)
 
 # Utilizes
@@ -18,8 +19,8 @@ A Flask base web interface to administer my [rpi_lock](https://github.com/chdsbd
 - [ ] Add error [logging](http://flask.pocoo.org/docs/0.10/errorhandling/#application-errors)
 - [ ] Send email on bad card read
 - [x] Button to unlock door
-- [ ] Rpi status
-- [ ] wiegand read_process status
+- [x] Rpi status
+- [x] wiegand read_process status
 - [x] Customize flash() to show red for errors
 - [x] Add tests
-- [ ] Add Travis-ci
+- [x] Add Travis-ci

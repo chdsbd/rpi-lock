@@ -10,13 +10,14 @@ from datetime import datetime
 import RPi.GPIO as GPIO
 from RPIO import PWM
 
-data1 = 7  # DATA1 (White) PIN
-data0 = 11  # DATA0 (Green) PIN
+data1 = 7  # (White) PIN
+data0 = 11  # (Green) PIN
 servo_pin = 27
 servo_range = [600, 1300]  # Left, Right (2300 Max, 500 Min)
-db_path = 'card_database.db'
+DATABASE = 'doorlock.db'
 base_timeout = 5
 RFID_STATUS_FILE = '/tmp/rfid_running'
+
 timeout = base_timeout
 bits = ''
 
@@ -33,28 +34,14 @@ def gpio_setup():
 
 
 def sql_setup():
-    if os.path.isfile(db_path) != True:
-        print('Missing Database. Run sql_setup.py script w/o root to create.')
-    con = sqlite3.connect(db_path)
-    with con:
-        cur = con.cursor()
-        cur.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='cardlist'")
-        cardlist_exists = cur.fetchone()
-        if cardlist_exists[0] == 'cardlist':
-            pass
-        else:
-            print('Missing cardlist table. Run sql_setup.')
-            exit(1)
+    if os.path.isfile(DATABASE) != True:
+        print('''
+        Missing Database. Run sql_setup.py script w/o root to create.
+        Cannot use sudo or other user programs cannot interact with tables.
+        ''')
 
-        cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='log'")
-        log_exists = cur.fetchone()
-        if log_exists[0] == 'log':
-            pass
-        else:
-            print('Missing log table. Run sql_setup.')
-            exit(1)
-
+def connect_db():
+    return sqlite3.connect(DATABASE)
 
 def one(channel):
     global bits
@@ -87,7 +74,7 @@ def loop():
 def process_card(binary):
     name, status = auth_status(binary)
     if status == True:
-        print('Allowed "{}" entry.'.format(name))
+        print(u'Allowed "{}" entry.'.format(name))
         unlock_door()
         log(status, binary, name)
     else:
@@ -96,34 +83,33 @@ def process_card(binary):
 
 
 def auth_status(bit_query):
-    con = sqlite3.connect(db_path)
+    con = connect_db()
     with con:
         cur = con.cursor()
         cur.execute(
-            'SELECT Name, Status FROM cardlist WHERE Binary = ?', [bit_query])
+            'SELECT name FROM users WHERE Binary = ?', [bit_query])
         row = cur.fetchone()
         if row is None:
-            return 'Unknown', False
+            return row, False
         else:
-            name, status = row
-            return name, bool(status)
+            return row[0], True
 
 
 def log(status, binary, name=None):
-    con = sqlite3.connect(db_path)
+    con = connect_db()
     with con:
         cur = con.cursor()
-        cur.execute('''INSERT INTO log (Date, EntryStatus, Name, Binary)
-                       VALUES(?,?,?,?)''', (datetime.utcnow(), status,
-                                            name, binary))
+        cur.execute('''INSERT INTO log (date, name, binary, status)
+                       VALUES(?,?,?,?)''',
+                       (datetime.utcnow(), name, binary, status))
 
 
 def unlock_door():
     print('Unlocking...')
-    servo.set_servo(servo_pin, servo_range[1])  # OPEN
+    servo.set_servo(servo_pin, servo_range[1])
     time.sleep(4)
     print('Locking...')
-    servo.set_servo(servo_pin, servo_range[0])  # CLOSE
+    servo.set_servo(servo_pin, servo_range[0])
     time.sleep(2)
     servo.stop_servo(servo_pin)
 
@@ -136,8 +122,8 @@ def main():
         loop()
     except KeyboardInterrupt:
         os.remove('RFID_STATUS_FILE')
-        print('\nRunning GPIO Cleanup')
         GPIO.cleanup()
+        print('Clean Exit.')
 
 if __name__ == '__main__':
     main()

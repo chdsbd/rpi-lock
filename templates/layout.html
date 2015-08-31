@@ -50,9 +50,11 @@
             %}><a href="{{ href|e }}">{{ caption|e }}</a></li>
         {% endfor %}
             <li>
+             {% if session.logged_in %}
               <form class="navbar-form navbar-left" action="{{ url_for('unlock_door') }}" method="post">
                 <button type="submit" name="door" value="unlock" class="btn btn-primary">Unlock Door</button>
               </form>
+              {% endif %}
             </li>
           </ul>
         </li>

@@ -5,6 +5,10 @@ from flask import Flask, render_template, g, redirect, session, request, \
                 flash, url_for, abort
 import sqlite3
 from contextlib import closing
+import os.path
+import httplib
+
+RFID_STATUS_FILE = '/tmp/rfid_running'
 
 app = Flask(__name__)
 
@@ -56,9 +60,9 @@ def login():
     error = None
     if request.method == 'POST':
         if request.form['username'] != app.config['USERNAME']:
-            flash('Invalid username', 'error')
+            flash('Invalid username', 'danger')
         elif request.form['password'] != app.config['PASSWORD']:
-            flash('Invalid password', 'error')
+            flash('Invalid password', 'danger')
         else:
             session['logged_in'] = True
             flash('You were logged in')
@@ -76,15 +80,15 @@ def form_validator(form_values):
     for key, value in form_values.iteritems():
         if len(value) <= 0:
             if key != 'note':
-                flash(u'{} is below min value'.format(key), 'error')
+                flash(u'{} is below min value'.format(key), 'warning')
                 result = False
-        if len(value) >= 100:
-            flash(u'{} exceeds max length'.format(key), 'error')
+        if len(value) >=100:
+            flash(u'{} exceeds max length'.format(key), 'warning')
             result = False
         if key == 'binary':
             for char in value:
                 if char not in ('0', '1'):
-                    flash(u'String "{}" is not binary'.format(value), 'error')
+                    flash(u'String "{}" is not binary'.format(value), 'warning')
                     result = False
                     break
     return result
@@ -107,7 +111,6 @@ def add_user():
 def delete_user():
     if not session.get('logged_in'):
         abort(401)
-    print request.form['user_id']
     g.db.execute('delete from users where id=?', [request.form['user_id']])
     g.db.commit()
     flash('User deleted successfully.')
@@ -125,6 +128,30 @@ def show_log():
                 binary=row[3],
                 status=row[4]) for row in cur.fetchall()]
     return render_template('show_log.html', log=log)
+
+@app.route('/rpi')
+def rpi_status():
+    if not session.get('logged_in'):
+        return redirect(url_for(login))
+    rpi = dict(rfid=os.path.isfile(RFID_STATUS_FILE), net=have_internet())
+    return render_template('rpi.html', rpi=rpi)
+
+def have_internet():
+    conn = httplib.HTTPConnection("www.google.com")
+    try:
+        conn.request("HEAD", "/")
+        return True
+    except:
+        return False
+
+@app.route('/unlock', methods=['POST'])
+def unlock_door():
+    if not session.get('logged_in'):
+        return redirect(url_for(login))
+    if request.form['door'] == 'unlock':
+        # TODO: Trigger unlock squence
+        flash('Unlocking Door', 'info')
+    return redirect(url_for('show_log'))
 
 @app.errorhandler(404)
 def page_not_found(error):

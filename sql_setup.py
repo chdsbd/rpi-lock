@@ -1,38 +1,24 @@
 #!/usr/bin/env python
 
+from contextlib import closing
 import os
 import sqlite3
 
-db_path = 'card_database.db'
+DATABASE = 'doorlock.db'
 
 # SQL must be setup as user so table is editable by user
 
+def connect_db():
+    return sqlite3.connect(DATABASE)
 
-def sql_setup():
-    con = sqlite3.connect(db_path)
-    with con:
-        try:
-            cur = con.cursor()
-            cur.execute('''CREATE TABLE cardlist (Date TEXT,
-                                                  Binary TEXT,
-                                                  Name TEXT,
-                                                  Status BOOLEAN)''')
-        except Exception as e:
-            if str(e) == 'table cardlist already exists':
-                print('cardlist table exists')
-            else:
-                raise
-        try:
-            cur = con.cursor()
-            cur.execute('CREATE TABLE log (Date, EntryStatus, Name, Binary)')
-        except Exception as e:
-            if str(e) == 'table log already exists':
-                print('Log table exists')
-            else:
-                raise
+def init_db():
+    with closing(connect_db()) as db:
+        with open('schema.sql', mode='r') as f:
+            db.cursor().executescript(f.read())
+        db.commit()
 
 if __name__ == '__main__':
     try:
         os.environ['SUDO_GID']
     except KeyError:
-        sql_setup()
+        init_db()

@@ -48,8 +48,8 @@
             %}><a href="{{ href|e }}">{{ caption|e }}</a></li>
         {% endfor %}
             <li>
-              <form class="navbar-form navbar-left" type="Input">
-                <input type="button" value="input" class="btn btn-primary">
+              <form class="navbar-form navbar-left" action="{{ url_for('unlock_door') }}" method="post">
+                <button type="submit" name="door" value="unlock" class="btn btn-primary">Unlock Door</button>
               </form>
             </li>
           </ul>
@@ -70,10 +70,20 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
-              {% if category == 'error' %}
+              {% if category == 'danger' %}
                 <div class="alert alert-danger alert-dismissible" role="alert">
                   <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                   <strong>Error:</strong> {{ message }}
+                </div>
+              {% elif category == 'info' %}
+                <div class="alert alert-info alert-dismissible" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <strong>Heads Up:</strong> {{ message }}
+                </div>
+              {% elif category == 'warning' %}
+                <div class="alert alert-warning alert-dismissible" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <strong>Warning:</strong> {{ message }}
                 </div>
               {% else %}
                 <div class="alert alert-success alert-dismissible" role="alert">

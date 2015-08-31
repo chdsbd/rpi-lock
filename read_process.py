@@ -16,7 +16,7 @@ servo_pin = 27
 servo_range = [600, 1300]  # Left, Right (2300 Max, 500 Min)
 db_path = 'card_database.db'
 base_timeout = 5
-
+RFID_STATUS_FILE = '/tmp/rfid_running'
 timeout = base_timeout
 bits = ''
 
@@ -130,10 +130,12 @@ def unlock_door():
 
 def main():
     try:
+        open('RFID_STATUS_FILE', 'w')
         gpio_setup()
         sql_setup()
         loop()
     except KeyboardInterrupt:
+        os.remove('RFID_STATUS_FILE')
         print('\nRunning GPIO Cleanup')
         GPIO.cleanup()
 

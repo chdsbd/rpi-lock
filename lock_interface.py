@@ -7,6 +7,7 @@ import sqlite3
 from contextlib import closing
 import os.path
 import httplib
+import subprocess
 
 RFID_STATUS_FILE = '/tmp/rfid_running'
 
@@ -149,7 +150,7 @@ def unlock_door():
     if not session.get('logged_in'):
         return redirect(url_for(login))
     if request.form['door'] == 'unlock':
-        # TODO: Trigger unlock squence
+        subprocess.call(["sudo", "python", "unlock_door.py"])
         flash('Unlocking Door', 'info')
     return redirect(url_for('show_log'))
 

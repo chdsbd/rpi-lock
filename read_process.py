@@ -119,12 +119,12 @@ def unlock_door(method='card'):
 
 def main():
     try:
-        open('RFID_STATUS_FILE', 'w')
+        open(RFID_STATUS_FILE, 'w')
         gpio_setup()
         sql_setup()
         loop()
     except KeyboardInterrupt:
-        os.remove('RFID_STATUS_FILE')
+        os.remove(RFID_STATUS_FILE)
         GPIO.cleanup()
         print('Clean Exit.')
 

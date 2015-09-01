@@ -104,7 +104,9 @@ def log(status, binary, name=None):
                        (datetime.utcnow(), name, binary, status))
 
 
-def unlock_door():
+def unlock_door(method='card'):
+    if method == 'button':
+        log('True', 'Web Button', 'Web User')
     print('Unlocking...')
     servo.set_servo(servo_pin, servo_range[1])
     time.sleep(4)
@@ -112,6 +114,7 @@ def unlock_door():
     servo.set_servo(servo_pin, servo_range[0])
     time.sleep(2)
     servo.stop_servo(servo_pin)
+    return True
 
 
 def main():

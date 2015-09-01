@@ -11,7 +11,7 @@ import subprocess
 
 # Both paths below must be absolute
 RFID_STATUS_FILE = '/tmp/rfid_running'
-UNLOCK_DOOR_PATH = 'home/pi/rpi_lock/unlock_door.py'
+UNLOCK_DOOR_PATH = '/home/pi/rpi_lock/unlock_door.py'
 
 app = Flask(__name__)
 

@@ -15,7 +15,7 @@ A Flask base web interface to administer my [rpi_lock](https://github.com/chdsbd
 - [x] Validate form input
 - [x] Add ability to delete users
 - [x] interface for card access list
-- [ ] must interact with remote tables
+- [ ] Use same table as rpi_lock
 - [ ] Add error [logging](http://flask.pocoo.org/docs/0.10/errorhandling/#application-errors)
 - [ ] Send email on bad card read
 - [x] Button to unlock door

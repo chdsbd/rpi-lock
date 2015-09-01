@@ -9,7 +9,9 @@ import os.path
 import httplib
 import subprocess
 
+# Both paths below must be absolute
 RFID_STATUS_FILE = '/tmp/rfid_running'
+UNLOCK_DOOR_PATH = 'home/pi/rpi_lock/unlock_door.py'
 
 app = Flask(__name__)
 
@@ -150,7 +152,7 @@ def unlock_door():
     if not session.get('logged_in'):
         return redirect(url_for(login))
     if request.form['door'] == 'unlock':
-        subprocess.call(["sudo", "python", "unlock_door.py"])
+        subprocess.Popen(["sudo", "python", UNLOCK_DOOR_PATH])
         flash('Unlocking Door', 'info')
     return redirect(url_for('show_log'))
 

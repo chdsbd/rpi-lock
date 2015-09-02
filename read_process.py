@@ -14,7 +14,7 @@ data1 = 7  # (White) PIN
 data0 = 11  # (Green) PIN
 servo_pin = 27
 servo_range = [600, 1300]  # Left, Right (2300 Max, 500 Min)
-DATABASE = 'doorlock.db'
+DATABASE = '/home/pi/rpi_flask_interface/doorlock.db'
 base_timeout = 5
 RFID_STATUS_FILE = '/tmp/rfid_running'
 

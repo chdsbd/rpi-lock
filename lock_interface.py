@@ -152,7 +152,7 @@ def unlock_door():
     if not session.get('logged_in'):
         return redirect(url_for(login))
     if request.form['door'] == 'unlock':
-        subprocess.Popen(["sudo", "python", UNLOCK_DOOR_PATH])
+        subprocess.Popen(["sudo", "python", UNLOCK_DOOR_PATH, "web"])
         flash('Unlocking Door', 'info')
     return redirect(url_for('show_log'))
 

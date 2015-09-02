@@ -6,23 +6,19 @@ import sqlite3
 import os.path
 from sys import exit
 from datetime import datetime
+import subprocess
 
 import RPi.GPIO as GPIO
-from RPIO import PWM
 
 data1 = 7  # (White) PIN
 data0 = 11  # (Green) PIN
-servo_pin = 27
-servo_range = [600, 1300]  # Left, Right (2300 Max, 500 Min)
 DATABASE = '/home/pi/rpi_flask_interface/doorlock.db'
 base_timeout = 5
 RFID_STATUS_FILE = '/tmp/rfid_running'
+UNLOCK_DOOR_PATH = '/home/pi/rpi_lock/unlock_door.py'
 
 timeout = base_timeout
 bits = ''
-
-PWM.set_loglevel(PWM.LOG_LEVEL_ERRORS)
-servo = PWM.Servo()
 
 
 def gpio_setup():
@@ -75,7 +71,7 @@ def process_card(binary):
     name, status = auth_status(binary)
     if status == True:
         print(u'Allowed "{}" entry.'.format(name))
-        unlock_door()
+        subprocess.Popen(["sudo", "python", UNLOCK_DOOR_PATH])
         log(status, binary, name)
     else:
         print('Disallowed:', binary)
@@ -102,19 +98,6 @@ def log(status, binary, name=None):
         cur.execute('''INSERT INTO log (date, name, binary, status)
                        VALUES(?,?,?,?)''',
                        (datetime.utcnow(), name, binary, status))
-
-
-def unlock_door(method='card'):
-    if method == 'button':
-        log('True', 'Web Button', 'Web User')
-    print('Unlocking...')
-    servo.set_servo(servo_pin, servo_range[1])
-    time.sleep(4)
-    print('Locking...')
-    servo.set_servo(servo_pin, servo_range[0])
-    time.sleep(2)
-    servo.stop_servo(servo_pin)
-    return True
 
 
 def main():

@@ -20,10 +20,11 @@
         {% if binary %}
         <script>document.getElementById("InputBinary").defaultValue = "{{ binary }}";</script>
         {% endif %}
-        <button type="submit" class="btn btn-default" value="Submit">Add User</button>
+        <button type="submit" class="btn btn-default extra-padding" value="Submit">Add User</button>
     </form>
     </br>
     {% if users %}
+    <div class="table-responsive">
     <table class="table table-striped sortable-theme-bootstrap" data-sortable>
         <thead>
             <tr>
@@ -50,6 +51,7 @@
 
         </tbody>
     </table>
+    </div>
     {% else %}
     <h2 class="text-warning">No users exist in table.</h2>
     {% endif %}

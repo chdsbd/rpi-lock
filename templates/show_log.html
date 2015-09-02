@@ -4,6 +4,7 @@
 <div class="container">
 <h1>Door Lock Access Log</h1>
 {% if log %}
+    <div class="table-responsive">
     <table class="table table-striped sortable-theme-bootstrap" data-sortable>
     <thead>
     <tr>
@@ -25,6 +26,8 @@
     </tr>
   {% endfor %}
   </tbody>
+ </table>
+ </div>
 {% else %}
 <h2 class="text-warning">Access log is empty.</h2>
 {% endif %}

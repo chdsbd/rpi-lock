@@ -13,7 +13,7 @@ import RPi.GPIO as GPIO
 data1 = 7  # (White) PIN
 data0 = 11  # (Green) PIN
 DATABASE = '/home/pi/rpi_flask_interface/doorlock.db'
-base_timeout = 5
+base_timeout = 10
 RFID_STATUS_FILE = '/tmp/rfid_running'
 UNLOCK_DOOR_PATH = '/home/pi/rpi_lock/unlock_door.py'
 
@@ -71,7 +71,7 @@ def process_card(binary):
     name, status = auth_status(binary)
     if status == True:
         print(u'Allowed "{}" entry.'.format(name))
-        subprocess.Popen(["sudo", "python", UNLOCK_DOOR_PATH])
+        subprocess.Popen(["sudo", "python", UNLOCK_DOOR_PATH, "card"])
         log(status, binary, name)
     else:
         print('Disallowed:', binary)

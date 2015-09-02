@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-# from RPIO import PWM
+from RPIO import PWM
 import time
 import sys
 

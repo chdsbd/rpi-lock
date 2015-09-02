@@ -132,7 +132,7 @@ def delete_user():
 def show_log():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-    cur = g.db.execute('select id, date, name, binary, status from log limit 100')
+    cur = g.db.execute('select id, date, name, binary, status from log order by id desc limit 100')
     log = [dict(id=row[0],
                 date=row[1],
                 name=row[2],

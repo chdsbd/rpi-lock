@@ -40,6 +40,16 @@ Expands upon [simple_wiegand](http://github.com/chdsbd/simple_wiegand) script to
 - Status LED
 - Create and [print](https://oshpark.com/pricing) circuit board for all connections
 
+### Notes:
+
+Tested using Raspberry Pi B+ with [HID MultiCLASS RP40 reader](http://www.hidglobal.com/products/readers/iclass/rp40)
+
+**CAUTION**: RFID readers typically output data at **5 volts**, you need to lower this to around **3.3 volts** for the Pi (see [voltage divider](https://en.wikipedia.org/wiki/Voltage_divider))
+
+### Setup Example:
+
+![sketch](/sketch/rpi_lock_bb.png?raw=true)
+
 ### References:
 - [HID RP40 Reader Install Guide](http://www.hidglobal.com/sites/hidglobal.com/files/resource_files/iclass_c_ins_mu_0.pdf)
 - [iDoor](https://web.archive.org/web/20150619213423/http://varenhor.st/2009/07/idoor-iphone-controlled-hydraulic-door/) *(web archive)*

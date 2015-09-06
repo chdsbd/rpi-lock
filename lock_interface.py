@@ -78,7 +78,7 @@ def show_users():
                   name=row[1],
                   note=row[2],
                   binary=row[3]) for row in cur.fetchall()]
-    cur = g.db.execute('select binary from log')
+    cur = g.db.execute('select binary from log order by id desc limit 1')
     binary = cur.fetchone()
     if binary:
         binary = binary[0]

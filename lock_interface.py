@@ -1,19 +1,22 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from flask import Flask, render_template, g, redirect, session, request, \
-                flash, url_for, abort
 import sqlite3
-from contextlib import closing
+import os
 import os.path
 import httplib
 import subprocess
+from functools import wraps
+from contextlib import closing
+
+from flask import Flask, render_template, g, redirect, session, request, \
+                flash, url_for, abort
+
+app = Flask(__name__)
 
 # Both paths below must be absolute
 RFID_STATUS_FILE = '/tmp/rfid_running'
 UNLOCK_DOOR_PATH = '/home/pi/rpi_lock/unlock_door.py'
-
-app = Flask(__name__)
 
 DATABASE = 'doorlock.db'
 DEBUG = True
@@ -21,7 +24,11 @@ SECRET_KEY = 'development key'
 USERNAME = 'admin'
 PASSWORD = 'default'
 
+# use default settings located in this file
 app.config.from_object(__name__)
+# overwrite default settings with file set by the env variable if set
+if os.environ.get('RPI_INTERFACE_SETTINGS') != (None and ''):
+    app.config.from_envvar('RPI_INTERFACE_SETTINGS')
 
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
@@ -31,6 +38,16 @@ def init_db():
         with app.open_resource('schema.sql', mode='r') as f:
             db.cursor().executescript(f.read())
         db.commit()
+
+def login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            flash('You need to login first.', 'warning')
+            return redirect(url_for('login'))
+    return wrap
 
 @app.before_request
 def before_request():
@@ -69,9 +86,9 @@ def form_validator(form_values):
     return result
 
 @app.route('/')
+
+@login_required
 def show_users():
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
     cur = g.db.execute('''select id, name, note, binary from users
                           order by id desc''')
     users = [dict(id=row[0],
@@ -99,6 +116,7 @@ def login():
     return render_template('login.html', error=error)
 
 @app.route('/logout')
+@login_required
 def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
@@ -129,9 +147,8 @@ def delete_user():
 
 
 @app.route('/log')
+@login_required
 def show_log():
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
     cur = g.db.execute('select id, date, name, binary, status from log order by id desc limit 100')
     log = [dict(id=row[0],
                 date=row[1],
@@ -141,16 +158,14 @@ def show_log():
     return render_template('show_log.html', log=log)
 
 @app.route('/status')
+@login_required
 def status():
-    if not session.get('logged_in'):
-        return redirect(url_for(login))
     status = dict(rfid=os.path.isfile(RFID_STATUS_FILE), net=have_internet())
     return render_template('status.html', status=status)
 
 @app.route('/unlock', methods=['POST'])
+@login_required
 def unlock_door():
-    if not session.get('logged_in'):
-        return redirect(url_for(login))
     if request.form['door'] == 'unlock':
         subprocess.Popen(["sudo", "python", UNLOCK_DOOR_PATH, "web"])
         flash('Unlocking Door', 'info')

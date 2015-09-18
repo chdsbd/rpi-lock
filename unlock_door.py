@@ -7,7 +7,7 @@ import sys
 from read_process import log
 
 servo_pin = 27
-servo_range = [600, 1300]  # Left, Right (2300 Max, 500 Min)
+servo_range = [800, 1400]  # Left, Right (2300 Max, 500 Min)
 
 method = sys.argv[1]
 

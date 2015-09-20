@@ -19,10 +19,10 @@ def unlock_door(method=None):
         log('Allow', 'Web Button', 'Web User')
     print('Unlocking...')
     servo.set_servo(servo_pin, servo_range[1])
-    time.sleep(4)
+    time.sleep(2.5)
     print('Locking...')
     servo.set_servo(servo_pin, servo_range[0])
-    time.sleep(2)
+    time.sleep(.5)
     servo.stop_servo(servo_pin)
 
 if __name__ == '__main__':

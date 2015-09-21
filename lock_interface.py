@@ -12,11 +12,13 @@ from contextlib import closing
 from flask import Flask, render_template, g, redirect, session, request, \
                 flash, url_for, abort
 
+from rpi_lock import unlock_door as lock
+
 app = Flask(__name__)
 
 # Both paths below must be absolute
 RFID_STATUS_FILE = '/tmp/rfid_running'
-UNLOCK_DOOR_PATH = '/home/pi/rpi_lock/unlock_door.py'
+READER_PATH = '/home/pi/rpi_flask_interface/rpi_lock/read_process.py'
 
 DATABASE = 'doorlock.db'
 DEBUG = True
@@ -167,7 +169,7 @@ def status():
 @login_required
 def unlock_door():
     if request.form['door'] == 'unlock':
-        subprocess.Popen(["sudo", "python", UNLOCK_DOOR_PATH, "web"])
+        lock.unlock_door()
         flash('Unlocking Door', 'info')
     return redirect(url_for('show_log'))
 
@@ -188,5 +190,5 @@ def page_not_found(error):
     return render_template('500.html'), 500
 
 if __name__ == '__main__':
-    app.debug = True
+    subprocess.Popen(["sudo", "python", READER_PATH]) 
     app.run('0.0.0.0', port=80)

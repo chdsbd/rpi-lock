@@ -6,16 +6,16 @@ import sqlite3
 import os.path
 from sys import exit
 from datetime import datetime
-import subprocess
 
 import RPi.GPIO as GPIO
+
+import unlock_door as lock
 
 data1 = 7  # (White) PIN
 data0 = 11  # (Green) PIN
 DATABASE = '/home/pi/rpi_flask_interface/doorlock.db'
 base_timeout = 10
 RFID_STATUS_FILE = '/tmp/rfid_running'
-UNLOCK_DOOR_PATH = '/home/pi/rpi_lock/unlock_door.py'
 
 timeout = base_timeout
 bits = ''
@@ -71,7 +71,7 @@ def process_card(binary):
     name, status = auth_status(binary)
     if status == True:
         print(u'Allowed "{}" entry.'.format(name))
-        subprocess.Popen(["sudo", "python", UNLOCK_DOOR_PATH, "card"])
+        lock.unlock_door()
         log(status, binary, name)
     else:
         print('Disallowed:', binary)

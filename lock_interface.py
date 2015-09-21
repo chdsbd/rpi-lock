@@ -8,6 +8,7 @@ import httplib
 import subprocess
 from functools import wraps
 from contextlib import closing
+from datetime import datetime
 
 from flask import Flask, render_template, g, redirect, session, request, \
                 flash, url_for, abort
@@ -170,6 +171,10 @@ def status():
 def unlock_door():
     if request.form['door'] == 'unlock':
         lock.unlock_door()
+        g.db.execute('''INSERT INTO log (date, name, binary, status)
+                       VALUES(?,?,?,?)''',
+                       (datetime.utcnow(), 'Web User', 'Button', 'Allow'))
+        g.db.commit()
         flash('Unlocking Door', 'info')
     return redirect(url_for('show_log'))
 
@@ -190,5 +195,5 @@ def page_not_found(error):
     return render_template('500.html'), 500
 
 if __name__ == '__main__':
-    subprocess.Popen(["sudo", "python", READER_PATH]) 
+    subprocess.Popen(["sudo", "python", READER_PATH])
     app.run('0.0.0.0', port=80)

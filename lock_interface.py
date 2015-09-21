@@ -12,8 +12,10 @@ from datetime import datetime
 
 from flask import Flask, render_template, g, redirect, session, request, \
                 flash, url_for, abort
-
-from rpi_lock import unlock_door as lock
+try:
+    from rpi_lock import unlock_door as lock
+except:
+    pass
 
 app = Flask(__name__)
 

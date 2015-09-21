@@ -2,3 +2,6 @@ language: python
 python: "2.7"
 install: "pip install -r requirements.txt"
 script: python lock_interface_tests.py 
+before_install:
+    - git clone https://github.com/chdsbd/rpi_lock
+

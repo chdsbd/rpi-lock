@@ -1,3 +1,5 @@
 *.db
 *.pyc
 venv/
+flask.cfg
+rpi_lock/

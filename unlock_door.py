@@ -2,12 +2,28 @@ from __future__ import print_function
 
 from RPIO import PWM
 import time
+import zmq
 
 servo_pin = 27
 servo_range = [800, 1400]  # Left, Right (2300 Max, 500 Min)
 
 PWM.set_loglevel(PWM.LOG_LEVEL_ERRORS)
 servo = PWM.Servo()
+
+def server():
+    context = zmq.Context()
+    socket = context.socket(zmq.REP)
+    socket.bind("tcp://*:5555")
+    print("Server started.")
+
+    while True:
+        message = socket.recv()
+        print("Recieved request: %s" % message)
+        if message == "unlock":
+            unlock_door()
+            socket.send(b"Servo Triggered")
+        else:
+            socket.send(b"Improper request, not unlocking door.")
 
 def unlock_door():
     print('Unlocking...')
@@ -19,7 +35,7 @@ def unlock_door():
     servo.stop_servo(servo_pin)
 if __name__ == '__main__':
     try:
-        unlock_door()
+        server()
     except Exception as e:
         servo.stop_servo(servo_pin)
         print(e)

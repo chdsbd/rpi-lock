@@ -7,9 +7,8 @@ import os.path
 from sys import exit
 from datetime import datetime
 
+import zmq
 import RPi.GPIO as GPIO
-
-import unlock_door as lock
 
 data1 = 7  # (White) PIN
 data0 = 11  # (Green) PIN
@@ -71,7 +70,7 @@ def process_card(binary):
     name, status = auth_status(binary)
     if status == True:
         print(u'Allowed "{}" entry.'.format(name))
-        lock.unlock_door()
+        unlock()
         log(status, binary, name)
     else:
         print('Disallowed:', binary)
@@ -91,7 +90,20 @@ def auth_status(bit_query):
             return row[0], True
 
 
+def unlock():
+    context = zmq.Context()
+    print("Connecting to server")
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5555")
+    socket.send(b"unlock")
+    print("unlock request sent")
+    reply = socket.recv()
+    print("Recieved reply:", reply)
+
+
 def log(status, binary, name=None):
+    if len(binary) < 10:
+        pass
     con = connect_db()
     with con:
         cur = con.cursor()

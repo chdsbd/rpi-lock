@@ -5,23 +5,18 @@ import sqlite3
 import os
 import os.path
 import httplib
-import subprocess
 from functools import wraps
 from contextlib import closing
 from datetime import datetime
 
+import zmq
 from flask import Flask, render_template, g, redirect, session, request, \
                 flash, url_for, abort
-try:
-    from rpi_lock import unlock_door as lock
-except:
-    pass
 
 app = Flask(__name__)
 
 # Both paths below must be absolute
 RFID_STATUS_FILE = '/tmp/rfid_running'
-READER_PATH = '/home/pi/rpi_flask_interface/rpi_lock/read_process.py'
 
 DATABASE = 'doorlock.db'
 DEBUG = True
@@ -172,13 +167,23 @@ def status():
 @login_required
 def unlock_door():
     if request.form['door'] == 'unlock':
-        lock.unlock_door()
+        door_unlock()
         g.db.execute('''INSERT INTO log (date, name, binary, status)
                        VALUES(?,?,?,?)''',
-                       (datetime.utcnow(), 'Web User', 'Button', 'Allow'))
+                       (datetime.utcnow(), 'Web User', 'Button', '1'))
         g.db.commit()
         flash('Unlocking Door', 'info')
     return redirect(url_for('show_log'))
+
+def door_unlock():
+    context = zmq.Context()
+    print "Connecting to server"
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5555")
+    socket.send(b"unlock")
+    print "Request sent"
+    reply = socket.recv()
+    print "Recieved reply:", reply
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -197,5 +202,4 @@ def page_not_found(error):
     return render_template('500.html'), 500
 
 if __name__ == '__main__':
-    subprocess.Popen(["sudo", "python", READER_PATH])
     app.run('0.0.0.0', port=80)

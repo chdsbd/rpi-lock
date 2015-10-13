@@ -13,7 +13,7 @@ servo = PWM.Servo()
 def server():
     context = zmq.Context()
     socket = context.socket(zmq.REP)
-    socket.bind("tcp://localhost:5555")
+    socket.bind("tcp://*:5555")
     print("Server started.")
 
     while True:

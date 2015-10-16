@@ -1,4 +1,4 @@
+pyzmq==14.7.0
 wheel==0.24.0
 RPIO==0.10.0
 RPi.GPIO==0.5.11
-click==5.1

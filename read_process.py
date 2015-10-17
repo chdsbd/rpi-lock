@@ -104,12 +104,13 @@ def unlock():
 def log(status, binary, name=None):
     if len(binary) < 10:
         pass
-    con = connect_db()
-    with con:
-        cur = con.cursor()
-        cur.execute('''INSERT INTO log (date, name, binary, status)
-                       VALUES(?,?,?,?)''',
-                       (datetime.utcnow(), name, binary, status))
+    else:
+        con = connect_db()
+        with con:
+            cur = con.cursor()
+            cur.execute('''INSERT INTO log (date, name, binary, status)
+                           VALUES(?,?,?,?)''',
+                           (datetime.utcnow(), name, binary, status))
 
 
 def main():

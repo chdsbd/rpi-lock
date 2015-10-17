@@ -26,6 +26,9 @@ PASSWORD = 'default'
 
 # use default settings located in this file
 app.config.from_object(__name__)
+
+app.config.from_pyfile('flask.cfg', silent=True)
+
 # overwrite default settings with file set by the env variable if set
 if os.environ.get('RPI_INTERFACE_SETTINGS') != (None and ''):
     app.config.from_envvar('RPI_INTERFACE_SETTINGS')

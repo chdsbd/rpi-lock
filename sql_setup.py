@@ -8,8 +8,10 @@ DATABASE = 'doorlock.db'
 
 # SQL must be setup as user so table is editable by user
 
+
 def connect_db():
     return sqlite3.connect(DATABASE)
+
 
 def init_db():
     with closing(connect_db()) as db:

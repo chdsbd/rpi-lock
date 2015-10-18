@@ -10,6 +10,7 @@ servo_range = [800, 1400]  # Left, Right (2300 Max, 500 Min)
 PWM.set_loglevel(PWM.LOG_LEVEL_ERRORS)
 servo = PWM.Servo()
 
+
 def server():
     context = zmq.Context()
     socket = context.socket(zmq.REP)
@@ -24,6 +25,7 @@ def server():
             socket.send(b"Servo Triggered")
         else:
             socket.send(b"Improper request, not unlocking door.")
+
 
 def unlock_door():
     print('Unlocking...')

@@ -111,7 +111,7 @@ def log(status, binary, name=None):
             cur = con.cursor()
             cur.execute('''INSERT INTO log (date, name, binary, status)
                            VALUES(?,?,?,?)''',
-                           (datetime.utcnow(), name, binary, status))
+                        (datetime.utcnow(), name, binary, status))
 
 
 def main():

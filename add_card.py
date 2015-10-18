@@ -7,6 +7,7 @@ import sqlite3
 import sys
 import click
 
+
 @click.command()
 @click.option('--db', default='doorlock.db', help='path to database')
 @click.option('--note', default=None, help='user note')
@@ -40,7 +41,8 @@ def add_user(name, db, note, binary):
             cur.execute('''INSERT OR REPLACE INTO users (name, note, binary)
                            VALUES (?,?,?)''', [name, note, binary])
             con.commit()
-            print(u'Added User with Name: {}, Note: {}, Binary: {}'.format(name, note, binary))
+            print(u'Added User with Name: {}, Note: {}, Binary: {}'.format(
+                name, note, binary))
     else:
         print('Missing Database')
 

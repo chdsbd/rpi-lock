@@ -6,6 +6,7 @@ import tempfile
 
 import lock_interface
 
+
 class LockInterfaceTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -22,7 +23,7 @@ class LockInterfaceTestCase(unittest.TestCase):
         return self.app.post('/login', data=dict(
             username=username,
             password=password
-            ), follow_redirects=True)
+        ), follow_redirects=True)
 
     def logout(self):
         return self.app.get('/logout', follow_redirects=True)
@@ -36,7 +37,7 @@ class LockInterfaceTestCase(unittest.TestCase):
     def test_logout(self):
         rv = self.login('admin', 'default')
         assert 'Add User' in rv.data
-        rv = self.logout() 
+        rv = self.logout()
         assert 'You were logged out' in rv.data
 
     def test_404(self):
@@ -46,7 +47,7 @@ class LockInterfaceTestCase(unittest.TestCase):
     def test_login_page(self):
         rv = self.app.get('/login')
         assert rv.status_code == 200
-        rv = self.login('badusername', lock_interface.PASSWORD) 
+        rv = self.login('badusername', lock_interface.PASSWORD)
         assert 'Invalid username' in rv.data
         rv = self.login(lock_interface.USERNAME, 'badpassword')
         assert 'Invalid password' in rv.data
@@ -56,28 +57,29 @@ class LockInterfaceTestCase(unittest.TestCase):
     def test_adding_entry(self):
         self.login(lock_interface.USERNAME, lock_interface.PASSWORD)
         self.app.post('/add', data=dict(
-           name = 'Joe Shmoe',
-           note = 'test node',
-           binary = '00000010010101'))
+            name='Joe Shmoe',
+            note='test node',
+            binary='00000010010101'))
         rv = self.app.get('/')
         assert 'New entry was successfully posted' in rv.data
         self.app.post('/add', data=dict(
-           name = 'Joe Shmoe',
-           note = 'test node',
-           binary = 'not binary data'))
+            name='Joe Shmoe',
+            note='test node',
+            binary='not binary data'))
         rv = self.app.get('/')
         assert 'is not binary' in rv.data
         self.app.post('/delete', data=dict(
-            user_id = 1))
+            user_id=1))
         rv = self.app.get('/')
         assert 'User deleted successfully.' in rv.data
         self.app.post('/add', data=dict(
-           name = '',
-           note = '',
-           binary = ''))
+            name='',
+            note='',
+            binary=''))
         rv = self.app.get('/')
-        assert ('name is below min value' and \
-                'binary is below min value')  in rv.data
+        assert ('name is below min value' and
+                'binary is below min value') in rv.data
+
     def test_status_page(self):
         self.login(lock_interface.USERNAME, lock_interface.PASSWORD)
         rv = self.app.get('/status')

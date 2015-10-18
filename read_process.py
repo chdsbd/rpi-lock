@@ -4,12 +4,10 @@ from __future__ import print_function
 import time
 import sqlite3
 import os.path
-from sys import exit
 from datetime import datetime
 
+import zmq
 import RPi.GPIO as GPIO
-
-import unlock_door as lock
 
 data1 = 7  # (White) PIN
 data0 = 11  # (Green) PIN
@@ -30,14 +28,16 @@ def gpio_setup():
 
 
 def sql_setup():
-    if os.path.isfile(DATABASE) != True:
+    if os.path.isfile(DATABASE):
         print('''
         Missing Database. Run sql_setup.py script w/o root to create.
         Cannot use sudo or other user programs cannot interact with tables.
         ''')
 
+
 def connect_db():
     return sqlite3.connect(DATABASE)
+
 
 def one(channel):
     global bits
@@ -69,9 +69,9 @@ def loop():
 
 def process_card(binary):
     name, status = auth_status(binary)
-    if status == True:
+    if status:
         print(u'Allowed "{}" entry.'.format(name))
-        lock.unlock_door()
+        unlock()
         log(status, binary, name)
     else:
         print('Disallowed:', binary)
@@ -91,13 +91,27 @@ def auth_status(bit_query):
             return row[0], True
 
 
+def unlock():
+    context = zmq.Context()
+    print("Connecting to server")
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5555")
+    socket.send(b"unlock")
+    print("Unlock request sent")
+    reply = socket.recv()
+    print("Received reply:", reply)
+
+
 def log(status, binary, name=None):
-    con = connect_db()
-    with con:
-        cur = con.cursor()
-        cur.execute('''INSERT INTO log (date, name, binary, status)
-                       VALUES(?,?,?,?)''',
-                       (datetime.utcnow(), name, binary, status))
+    if len(binary) < 10:
+        pass
+    else:
+        con = connect_db()
+        with con:
+            cur = con.cursor()
+            cur.execute('''INSERT INTO log (date, name, binary, status)
+                           VALUES(?,?,?,?)''',
+                           (datetime.utcnow(), name, binary, status))
 
 
 def main():

@@ -6,6 +6,15 @@ This is just a project that allows us to open our door with our student ids inst
 
 In addition to using our RFID cards we can interact with the lock via a web interface, which enables opening of the door as well as managing of logs.
 
+## Setup
+
+```bash
+git clone https://github.com/chdsbd/rpi-lock &&
+bash rpi-lock/install.sh
+```
+
+*Note:* The environment variable `RPI_LOCK_CONFIG_PATH` must be set to override the default config values
+
 ## Web Interface Utilizes
 
 - [Flask](https://github.com/mitsuhiko/flask)

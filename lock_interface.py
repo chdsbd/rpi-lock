@@ -1,13 +1,20 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 
 import sqlite3
 import os
-import os.path
-import httplib
+try:
+    import httplib
+except ImportError:
+    import http.client as httplib
 from functools import wraps
 from contextlib import closing
 from datetime import datetime
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 
 import zmq
 from flask import Flask, render_template, g, redirect, session, request, \
@@ -15,26 +22,33 @@ from flask import Flask, render_template, g, redirect, session, request, \
 
 app = Flask(__name__)
 
-# Both paths below must be absolute
-RFID_STATUS_FILE = '/tmp/rfid_running'
-
-DATABASE = 'doorlock.db'
-DEBUG = True
-SECRET_KEY = 'development key'
 USERNAME = 'admin'
 PASSWORD = 'default'
+SECRET_KEY = 'development key'
+DEBUG = True
+PORT = 5000
+DATABASE = 'doorlock.db'
+RFID_STATUS_FILE = '/tmp/rfid_running'
 
 # use default settings located in this file
 app.config.from_object(__name__)
 
-app.config.from_pyfile('flask.cfg', silent=True)
-
 # overwrite default settings with file set by the env variable if set
-if os.environ.get('RPI_INTERFACE_SETTINGS') != (None and ''):
-    app.config.from_envvar('RPI_INTERFACE_SETTINGS')
+if os.environ.get('RPI_LOCK_CONFIG_PATH') != (None and ''):
+    config = ConfigParser.ConfigParser()
+    config.read(os.environ['RPI_LOCK_CONFIG_PATH'])
+    app.config.update(
+    USERNAME=config.get("WEB", "USERNAME"),
+    PASSWORD=config.get("WEB", "PASSWORD"),
+    SECRET_KEY=config.get("WEB", "SECRET_KEY"),
+    DEBUG=config.get("WEB", "DEBUG"),
+    PORT=config.get("WEB", "PORT"),
+    RFID_STATUS_FILE=config.get("PATH", "RFID_STATUS_FILE"),
+    DATABASE=config.get("PATH", "DATABASE"),
+)
 
 def connect_db():
-    return sqlite3.connect(app.config['DATABASE'])
+    return sqlite3.connect(str(app.config['DATABASE']))
 
 def init_db():
     with closing(connect_db()) as db:
@@ -72,18 +86,18 @@ def have_internet():
 
 def form_validator(form_values):
     result = True
-    for key, value in form_values.iteritems():
+    for key, value in form_values.items():
         if len(value) <= 0:
             if key != 'note':
-                flash(u'{} is below min value'.format(key), 'warning')
+                flash('{0} is below min value'.format(key).encode("utf-8"), 'warning')
                 result = False
         if len(value) >=100:
-            flash(u'{} exceeds max length'.format(key), 'warning')
+            flash('{0} exceeds max length'.format(key).encode("utf-8"), 'warning')
             result = False
         if key == 'binary':
             for char in value:
                 if char not in ('0', '1'):
-                    flash(u'String "{}" is not binary'.format(value), 'warning')
+                    flash('String "{0}" is not binary'.format(value).encode("utf-8"), 'warning')
                     result = False
                     break
     return result
@@ -180,13 +194,13 @@ def unlock_door():
 
 def door_unlock():
     context = zmq.Context()
-    print "Connecting to server"
+    print("Connecting to server")
     socket = context.socket(zmq.REQ)
     socket.connect("tcp://localhost:5555")
     socket.send(b"unlock")
-    print "Request sent"
+    print("Request sent")
     reply = socket.recv()
-    print "Recieved reply:", reply
+    print("Recieved reply:", reply)
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -205,4 +219,4 @@ def page_not_found(error):
     return render_template('500.html'), 500
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=80)
+    app.run('0.0.0.0', port=int(app.config['PORT']))

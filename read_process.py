@@ -3,17 +3,32 @@ from __future__ import print_function
 
 import time
 import sqlite3
-import os.path
+import os
 from datetime import datetime
 
 import zmq
 import RPi.GPIO as GPIO
+try:
+    import ConfigParser
+except:
+    import configparser
 
-data1 = 7  # (White) PIN
-data0 = 11  # (Green) PIN
-DATABASE = '/home/pi/rpi_flask_interface/doorlock.db'
+# Default values
+data0 = 11
+data1 = 7
+database = "doorlock.db"
 base_timeout = 10
-RFID_STATUS_FILE = '/tmp/rfid_running'
+rfid_status_file = "/tmp/rfid_running"
+
+# overwrite default settings with file set by the env variable if set
+if os.environ.get('RPI_LOCK_CONFIG_PATH') != (None and ''):
+    config = ConfigParser.ConfigParser()
+    config.read(os.environ['RPI_LOCK_CONFIG_PATH'])
+    data0 = config.get("RFID", "DATA0")
+    data1 = config.get("RFID", "DATA1")
+    base_timeout = config.get("RFID", "BASE_TIMEOUT")
+    database = config.get("PATH", "DATABASE").strip("'")
+    rfid_status_file = config.get("PATH", "RFID_STATUS_FILE").strip("'")
 
 timeout = base_timeout
 bits = ''
@@ -27,16 +42,8 @@ def gpio_setup():
     GPIO.add_event_detect(data0, GPIO.FALLING, callback=zero)
 
 
-def sql_setup():
-    if os.path.isfile(DATABASE):
-        print('''
-        Missing Database. Run sql_setup.py script w/o root to create.
-        Cannot use sudo or other user programs cannot interact with tables.
-        ''')
-
-
 def connect_db():
-    return sqlite3.connect(DATABASE)
+    return sqlite3.connect(database)
 
 
 def one(channel):
@@ -93,7 +100,6 @@ def auth_status(bit_query):
 
 def unlock():
     context = zmq.Context()
-    print("Connecting to server")
     socket = context.socket(zmq.REQ)
     socket.connect("tcp://localhost:5555")
     socket.send(b"unlock")
@@ -116,12 +122,11 @@ def log(status, binary, name=None):
 
 def main():
     try:
-        open(RFID_STATUS_FILE, 'w')
+        open(rfid_status_file, 'w')
         gpio_setup()
-        sql_setup()
         loop()
     except KeyboardInterrupt:
-        os.remove(RFID_STATUS_FILE)
+        os.remove(rfid_status_file)
         GPIO.cleanup()
         print('Clean Exit.')
 

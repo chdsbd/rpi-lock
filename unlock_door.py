@@ -1,11 +1,26 @@
+#!/usr/bin/env python
 from __future__ import print_function
 
 from RPIO import PWM
 import time
 import zmq
+import os
+try:
+    import ConfigParser
+except:
+    import configparser
 
+# Default values
 servo_pin = 27
 servo_range = [800, 1400]  # Left, Right (2300 Max, 500 Min)
+
+# overwrite default settings with file set by the env variable if set
+if os.environ.get('RPI_LOCK_CONFIG_PATH') != (None and ''):
+    config = ConfigParser.ConfigParser()
+    config.read(os.environ['RPI_LOCK_CONFIG_PATH'])
+    servo_pin = config.get("SERVO", "RANGE")
+    servo_range = config.get("SERVO", "PIN")
+
 
 PWM.set_loglevel(PWM.LOG_LEVEL_ERRORS)
 servo = PWM.Servo()
@@ -20,7 +35,7 @@ def server():
     while True:
         message = socket.recv()
         print("Recieved request: %s" % message)
-        if message == "unlock":
+        if message == b"unlock":
             unlock_door()
             socket.send(b"Servo Triggered")
         else:

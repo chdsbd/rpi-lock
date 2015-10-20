@@ -8,9 +8,18 @@ In addition to using our RFID cards we can interact with the lock via a web inte
 
 ## Setup
 
+Complete Install
+
 ```bash
 git clone https://github.com/chdsbd/rpi-lock &&
 bash rpi-lock/install.sh
+```
+
+Lite Install (w/o Web Interface)
+
+```bash
+git clone https://github.com/chdsbd/rpi-lock &&
+bash rpi-lock/install.sh -lite
 ```
 
 *Note:* The environment variable `RPI_LOCK_CONFIG_PATH` must be set to override the default config values

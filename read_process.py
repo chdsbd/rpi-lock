@@ -10,7 +10,7 @@ import zmq
 import RPi.GPIO as GPIO
 try:
     import ConfigParser
-except:
+except ImportError:
     import configparser
 
 # Default values
@@ -24,9 +24,9 @@ rfid_status_file = "/tmp/rfid_running"
 if os.environ.get('RPI_LOCK_CONFIG_PATH') != (None and ''):
     config = ConfigParser.ConfigParser()
     config.read(os.environ['RPI_LOCK_CONFIG_PATH'])
-    data0 = config.get("RFID", "DATA0")
-    data1 = config.get("RFID", "DATA1")
-    base_timeout = config.get("RFID", "BASE_TIMEOUT")
+    data0 = int(config.get("RFID", "DATA0"))
+    data1 = int(config.get("RFID", "DATA1"))
+    base_timeout = int(config.get("RFID", "BASE_TIMEOUT"))
     database = config.get("PATH", "DATABASE").strip("'")
     rfid_status_file = config.get("PATH", "RFID_STATUS_FILE").strip("'")
 

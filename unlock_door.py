@@ -7,19 +7,20 @@ import zmq
 import os
 try:
     import ConfigParser
-except:
+except ImportError:
     import configparser
 
 # Default values
 servo_pin = 27
-servo_range = [800, 1400]  # Left, Right (2300 Max, 500 Min)
+servo_range_min, servo_range_max = 800, 1400  # Left, Right (2300 Max, 500 Min)
 
 # overwrite default settings with file set by the env variable if set
 if os.environ.get('RPI_LOCK_CONFIG_PATH') != (None and ''):
     config = ConfigParser.ConfigParser()
     config.read(os.environ['RPI_LOCK_CONFIG_PATH'])
-    servo_pin = config.get("SERVO", "RANGE")
-    servo_range = config.get("SERVO", "PIN")
+    servo_range_max = int(config.get("SERVO", "MAX"))
+    servo_range_min = int(config.get("SERVO", "MIN"))
+    servo_pin = int(config.get("SERVO", "PIN"))
 
 
 PWM.set_loglevel(PWM.LOG_LEVEL_ERRORS)
@@ -44,15 +45,15 @@ def server():
 
 def unlock_door():
     print('Unlocking...')
-    servo.set_servo(servo_pin, servo_range[1])
+    servo.set_servo(servo_pin, servo_range_max)
     time.sleep(2.5)
     print('Locking...')
-    servo.set_servo(servo_pin, servo_range[0])
+    servo.set_servo(servo_pin, servo_range_min)
     time.sleep(1)
     servo.stop_servo(servo_pin)
 if __name__ == '__main__':
     try:
         server()
-    except Exception as e:
+    except j:
         servo.stop_servo(servo_pin)
         print(e)

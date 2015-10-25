@@ -38,13 +38,13 @@ if os.environ.get('RPI_LOCK_CONFIG_PATH') != (None and ''):
     config = ConfigParser.ConfigParser()
     config.read(os.environ['RPI_LOCK_CONFIG_PATH'])
     app.config.update(
-    USERNAME=config.get("WEB", "USERNAME"),
-    PASSWORD=config.get("WEB", "PASSWORD"),
-    SECRET_KEY=config.get("WEB", "SECRET_KEY"),
-    DEBUG=config.get("WEB", "DEBUG"),
-    PORT=config.get("WEB", "PORT"),
-    RFID_STATUS_FILE=config.get("PATH", "RFID_STATUS_FILE"),
-    DATABASE=config.get("PATH", "DATABASE"),
+    USERNAME = config.get("WEB", "USERNAME"),
+    PASSWORD = config.get("WEB", "PASSWORD"),
+    SECRET_KEY = config.get("WEB", "SECRET_KEY"),
+    DEBUG = bool(config.get("WEB", "DEBUG")),
+    PORT = int(config.get("WEB", "PORT")),
+    RFID_STATUS_FILE = config.get("PATH", "RFID_STATUS_FILE"),
+    DATABASE = config.get("PATH", "DATABASE"),
 )
 
 def connect_db():
@@ -219,4 +219,4 @@ def page_not_found(error):
     return render_template('500.html'), 500
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=int(app.config['PORT']))
+    app.run('0.0.0.0', port=app.config['PORT'])

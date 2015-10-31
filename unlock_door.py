@@ -8,7 +8,7 @@ import os
 try:
     import ConfigParser
 except ImportError:
-    import configparser
+    import configparser as ConfigParser
 
 # Default values
 servo_pin = 27
@@ -51,9 +51,10 @@ def unlock_door():
     servo.set_servo(servo_pin, servo_range_min)
     time.sleep(1)
     servo.stop_servo(servo_pin)
+
+
 if __name__ == '__main__':
     try:
         server()
-    except j:
+    except:
         servo.stop_servo(servo_pin)
-        print(e)

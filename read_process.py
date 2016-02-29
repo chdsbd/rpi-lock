@@ -11,7 +11,7 @@ import RPi.GPIO as GPIO
 try:
     import ConfigParser
 except ImportError:
-    import configparser
+    import configparser as ConfigParser
 
 # Default values
 data0 = 11

@@ -8,7 +8,7 @@ import os
 try:
     import ConfigParser
 except ImportError:
-    import configparser
+    import configparser as ConfigParser
 
 # Default values
 frequency = 50 # Hz

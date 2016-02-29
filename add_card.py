@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
-from datetime import datetime
 import os
 import sqlite3
-import sys
 import click
 
 

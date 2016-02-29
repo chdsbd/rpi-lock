@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
-from RPIO import PWM
+import RPi.GPIO as GPIO
 import time
 import zmq
 import os
@@ -11,21 +11,23 @@ except ImportError:
     import configparser as ConfigParser
 
 # Default values
+frequency = 50 # Hz
 servo_pin = 27
-servo_range_min, servo_range_max = 800, 1400  # Left, Right (2300 Max, 500 Min)
+duty_cycle_open, duty_cycle_closed = 6, 3  # in %
 
 # overwrite default settings with file set by the env variable if set
 if os.environ.get('RPI_LOCK_CONFIG_PATH') != (None and ''):
     config = ConfigParser.ConfigParser()
     config.read(os.environ['RPI_LOCK_CONFIG_PATH'])
-    servo_range_max = int(config.get("SERVO", "MAX"))
-    servo_range_min = int(config.get("SERVO", "MIN"))
+    duty_cycle_open = int(config.get("SERVO", "OPEN"))
+    duty_cycle_closed = int(config.get("SERVO", "CLOSED"))
     servo_pin = int(config.get("SERVO", "PIN"))
+    frequency = int(config.get("SERVO", "FREQUENCY"))
 
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(servo_pin, GPIO.OUT)
 
-PWM.set_loglevel(PWM.LOG_LEVEL_ERRORS)
-servo = PWM.Servo()
-
+servo = GPIO.PWM(servo_pin, frequency)
 
 def server():
     context = zmq.Context()
@@ -45,16 +47,17 @@ def server():
 
 def unlock_door():
     print('Unlocking...')
-    servo.set_servo(servo_pin, servo_range_max)
+    servo.start(duty_cycle_open)
     time.sleep(2.5)
     print('Locking...')
-    servo.set_servo(servo_pin, servo_range_min)
+    servo.ChangeDutyCycle(duty_cycle_closed)
     time.sleep(1)
-    servo.stop_servo(servo_pin)
-
+    servo.ChangeDutyCycle(0)
 
 if __name__ == '__main__':
     try:
         server()
+    except KeyboardInterrupt:
+        GPIO.cleanup()
     except:
-        servo.stop_servo(servo_pin)
+        GPIO.cleanup()

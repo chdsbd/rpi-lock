@@ -24,6 +24,14 @@ bash rpi-lock/install.sh -lite
 
 *Note:* The environment variable `RPI_LOCK_CONFIG_PATH` must be set to override the default config values
 
+Crontab commands
+
+```bash
+sudo RPI_LOCK_CONFIG_PATH=/home/pi/rpi-lock/rpi-lock.cfg python /home/pi/rpi-lock/lock_interface.py
+sudo RPI_LOCK_CONFIG_PATH=/home/pi/rpi-lock/rpi-lock.cfg python /home/pi/rpi-lock/read_process.py
+sudo RPI_LOCK_CONFIG_PATH=/home/pi/rpi-lock/rpi-lock.cfg python /home/pi/rpi-lock/unlock_door.py
+```
+
 ## Web Interface Utilizes
 
 - [Flask](https://github.com/mitsuhiko/flask)

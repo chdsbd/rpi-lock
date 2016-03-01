@@ -6,12 +6,12 @@ import sqlite3
 import os
 from datetime import datetime
 
-import zmq
+import socket
 import RPi.GPIO as GPIO
 try:
-    import ConfigParser
+    import configparser
 except ImportError:
-    import configparser as ConfigParser
+    import ConfigParser as configparser
 
 # Default values
 data0 = 11
@@ -22,7 +22,7 @@ rfid_status_file = "/tmp/rfid_running"
 
 # overwrite default settings with file set by the env variable if set
 if os.environ.get('RPI_LOCK_CONFIG_PATH') != (None and ''):
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read(os.environ['RPI_LOCK_CONFIG_PATH'])
     data0 = int(config.get("RFID", "DATA0"))
     data1 = int(config.get("RFID", "DATA1"))
@@ -99,13 +99,12 @@ def auth_status(bit_query):
 
 
 def unlock():
-    context = zmq.Context()
-    socket = context.socket(zmq.REQ)
-    socket.connect("tcp://localhost:5555")
-    socket.send(b"unlock")
-    print("Unlock request sent")
-    reply = socket.recv()
-    print("Received reply:", reply)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(("localhost", 5555))
+    s.sendall(b'unlock')
+    reply = s.recv(1024)
+    s.close()
+    print("Received reply:", reply.decode("utf-8"))
 
 
 def log(status, binary, name=None):

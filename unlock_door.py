@@ -3,12 +3,12 @@ from __future__ import print_function
 
 import RPi.GPIO as GPIO
 import time
-import zmq
+import socket
 import os
 try:
-    import ConfigParser
+    import configparser
 except ImportError:
-    import configparser as ConfigParser
+    import ConfigParser as configparser
 
 # Default values
 frequency = 50 # Hz
@@ -17,7 +17,7 @@ duty_cycle_open, duty_cycle_closed = 6, 3  # in %
 
 # overwrite default settings with file set by the env variable if set
 if os.environ.get('RPI_LOCK_CONFIG_PATH') != (None and ''):
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read(os.environ['RPI_LOCK_CONFIG_PATH'])
     duty_cycle_open = int(config.get("SERVO", "OPEN"))
     duty_cycle_closed = int(config.get("SERVO", "CLOSED"))
@@ -30,19 +30,19 @@ GPIO.setup(servo_pin, GPIO.OUT)
 servo = GPIO.PWM(servo_pin, frequency)
 
 def server():
-    context = zmq.Context()
-    socket = context.socket(zmq.REP)
-    socket.bind("tcp://127.0.0.1:5555")
-    print("Server started.")
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(('localhost', 5555))
 
     while True:
-        message = socket.recv()
-        print("Recieved request: %s" % message)
+        s.listen(1)
+        conn, addr = s.accept()
+        message = conn.recv(1024)
+        print("Recieved request: ", message.decode("utf-8"))
         if message == b"unlock":
             unlock_door()
-            socket.send(b"Servo Triggered")
+            conn.sendall(b"Servo Triggered")
         else:
-            socket.send(b"Improper request, not unlocking door.")
+            conn.sendall(b"Improper request, not unlocking door.")
 
 
 def unlock_door():

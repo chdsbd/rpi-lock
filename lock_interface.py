@@ -12,11 +12,11 @@ from functools import wraps
 from contextlib import closing
 from datetime import datetime
 try:
-    import ConfigParser
+    import configparser
 except ImportError:
-    import configparser as ConfigParser
+    import ConfigParser as configparser
 
-import zmq
+import socket
 from flask import Flask, render_template, g, redirect, session, request, \
     flash, url_for, abort
 
@@ -35,7 +35,7 @@ app.config.from_object(__name__)
 
 # overwrite default settings with file set by the env variable if set
 if os.environ.get('RPI_LOCK_CONFIG_PATH') != (None and ''):
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read(os.environ['RPI_LOCK_CONFIG_PATH'])
     app.config.update(
     USERNAME = config.get("WEB", "USERNAME"),
@@ -210,14 +210,12 @@ def unlock_door():
 
 
 def door_unlock():
-    context = zmq.Context()
-    print("Connecting to server")
-    socket = context.socket(zmq.REQ)
-    socket.connect("tcp://localhost:5555")
-    socket.send(b"unlock")
-    print("Request sent")
-    reply = socket.recv()
-    print("Recieved reply:", reply)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(("localhost", 5555))
+    s.sendall(b'unlock')
+    reply = s.recv(1024)
+    s.close()
+    print("Received reply:", reply.decode("utf-8"))
 
 
 @app.errorhandler(404)

@@ -16,19 +16,21 @@ except ImportError:
 # Default values
 data0 = 11
 data1 = 7
-database = "doorlock.db"
+database = os.path.join(os.path.realpath(os.path.dirname(__file__)), "doorlock.db")
 base_timeout = 10
 rfid_status_file = "/tmp/rfid_running"
 
-# overwrite default settings with file set by the env variable if set
-if os.environ.get('RPI_LOCK_CONFIG_PATH') != (None and ''):
-    config = configparser.ConfigParser()
-    config.read(os.environ['RPI_LOCK_CONFIG_PATH'])
+config_file_paths = [os.path.expanduser('~/rpi-lock.cfg'),
+                     os.path.join(os.path.realpath(os.path.dirname(__file__)), "rpi-lock.cfg")]
+config = configparser.ConfigParser()
+config.read(config_file_paths)
+try:
     data0 = int(config.get("RFID", "DATA0"))
     data1 = int(config.get("RFID", "DATA1"))
     base_timeout = int(config.get("RFID", "BASE_TIMEOUT"))
-    database = config.get("PATH", "DATABASE").strip("'")
     rfid_status_file = config.get("PATH", "RFID_STATUS_FILE").strip("'")
+except configparser.Error as e:
+    print("ConfigParser Error: ", e)
 
 timeout = base_timeout
 bits = ''

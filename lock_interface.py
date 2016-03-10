@@ -27,25 +27,27 @@ PASSWORD = 'default'
 SECRET_KEY = 'development key'
 DEBUG = True
 PORT = 5000
-DATABASE = 'doorlock.db'
+DATABASE = os.path.join(os.path.realpath(os.path.dirname(__file__)), "doorlock.db")
 RFID_STATUS_FILE = '/tmp/rfid_running'
 
 # use default settings located in this file
 app.config.from_object(__name__)
 
-# overwrite default settings with file set by the env variable if set
-if os.environ.get('RPI_LOCK_CONFIG_PATH') != (None and ''):
-    config = configparser.ConfigParser()
-    config.read(os.environ['RPI_LOCK_CONFIG_PATH'])
+config_file_paths = [os.path.expanduser('~/rpi-lock.cfg'),
+                     os.path.join(os.path.realpath(os.path.dirname(__file__)), "rpi-lock.cfg")]
+config = configparser.ConfigParser()
+config.read(config_file_paths)
+try:
     app.config.update(
     USERNAME = config.get("WEB", "USERNAME"),
     PASSWORD = config.get("WEB", "PASSWORD"),
     SECRET_KEY = config.get("WEB", "SECRET_KEY"),
     DEBUG = bool(config.get("WEB", "DEBUG")),
     PORT = int(config.get("WEB", "PORT")),
-    RFID_STATUS_FILE = config.get("PATH", "RFID_STATUS_FILE"),
-    DATABASE = config.get("PATH", "DATABASE"),
-)
+    RFID_STATUS_FILE = config.get("PATH", "RFID_STATUS_FILE"))
+except configparser.Error as e:
+    print("ConfigParser Error: ", e)
+
 
 def connect_db():
     return sqlite3.connect(str(app.config['DATABASE']))

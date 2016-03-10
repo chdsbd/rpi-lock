@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from contextlib import closing
 import os
 import sqlite3
+from contextlib import closing
 
-DATABASE = 'doorlock.db'
+DATABASE = os.path.join(os.path.realpath(os.path.dirname(__file__)), "doorlock.db")
 
 # SQL must be setup as user so table is editable by user
 
@@ -20,7 +20,4 @@ def init_db():
         db.commit()
 
 if __name__ == '__main__':
-    try:
-        os.environ['SUDO_GID']
-    except KeyError:
-        init_db()
+    init_db()

@@ -8,29 +8,13 @@ In addition to using our RFID cards we can interact with the lock via a web inte
 
 ## Setup
 
-Complete Install
+1. Install the scripts
 
-```bash
-git clone https://github.com/chdsbd/rpi-lock &&
-bash rpi-lock/install.sh
-```
+   `git clone https://github.com/chdsbd/rpi-lock && bash rpi-lock/install.sh`
 
-Lite Install (w/o Web Interface)
+2. Change defaults in `rpi-lock.cfg`
 
-```bash
-git clone https://github.com/chdsbd/rpi-lock &&
-bash rpi-lock/install.sh -lite
-```
-
-*Note:* The environment variable `RPI_LOCK_CONFIG_PATH` must be set to override the default config values
-
-Crontab commands
-
-```bash
-sudo RPI_LOCK_CONFIG_PATH=/home/pi/rpi-lock/rpi-lock.cfg python /home/pi/rpi-lock/lock_interface.py
-sudo RPI_LOCK_CONFIG_PATH=/home/pi/rpi-lock/rpi-lock.cfg python /home/pi/rpi-lock/read_process.py
-sudo RPI_LOCK_CONFIG_PATH=/home/pi/rpi-lock/rpi-lock.cfg python /home/pi/rpi-lock/unlock_door.py
-```
+3. Reboot & Profit 💰
 
 ## Web Interface Utilizes
 

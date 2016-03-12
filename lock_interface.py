@@ -2,23 +2,25 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import sqlite3
 import os
+import socket
+import sqlite3
+from contextlib import closing
+from datetime import datetime
+from functools import wraps
+
+from flask import (Flask, abort, flash, g, redirect, render_template, request,
+                   session, url_for)
+
 try:
     import httplib
 except ImportError:
     import http.client as httplib
-from functools import wraps
-from contextlib import closing
-from datetime import datetime
 try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
 
-import socket
-from flask import Flask, render_template, g, redirect, session, request, \
-    flash, url_for, abort
 
 app = Flask(__name__)
 
@@ -27,7 +29,8 @@ PASSWORD = 'default'
 SECRET_KEY = 'development key'
 DEBUG = True
 PORT = 5000
-DATABASE = os.path.join(os.path.realpath(os.path.dirname(__file__)), "doorlock.db")
+DATABASE = os.path.join(os.path.realpath(
+    os.path.dirname(__file__)), "doorlock.db")
 RFID_STATUS_FILE = '/tmp/rfid_running'
 
 # use default settings located in this file
@@ -39,12 +42,12 @@ config = configparser.ConfigParser()
 config.read(config_file_paths)
 try:
     app.config.update(
-    USERNAME = config.get("WEB", "USERNAME"),
-    PASSWORD = config.get("WEB", "PASSWORD"),
-    SECRET_KEY = config.get("WEB", "SECRET_KEY"),
-    DEBUG = bool(config.get("WEB", "DEBUG")),
-    PORT = int(config.get("WEB", "PORT")),
-    RFID_STATUS_FILE = config.get("PATH", "RFID_STATUS_FILE"))
+        USERNAME=config.get("WEB", "USERNAME"),
+        PASSWORD=config.get("WEB", "PASSWORD"),
+        SECRET_KEY=config.get("WEB", "SECRET_KEY"),
+        DEBUG=bool(config.get("WEB", "DEBUG")),
+        PORT=int(config.get("WEB", "PORT")),
+        RFID_STATUS_FILE=config.get("PATH", "RFID_STATUS_FILE"))
 except configparser.Error as e:
     print("ConfigParser Error: ", e)
 

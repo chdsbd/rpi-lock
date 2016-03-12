@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
-import time
-import sqlite3
 import os
+import socket
+import sqlite3
+import time
 from datetime import datetime
 
-import socket
 import RPi.GPIO as GPIO
+
 try:
     import configparser
 except ImportError:
@@ -16,7 +17,8 @@ except ImportError:
 # Default values
 data0 = 11
 data1 = 7
-database = os.path.join(os.path.realpath(os.path.dirname(__file__)), "doorlock.db")
+database = os.path.join(os.path.realpath(
+    os.path.dirname(__file__)), "doorlock.db")
 base_timeout = 10
 rfid_status_file = "/tmp/rfid_running"
 

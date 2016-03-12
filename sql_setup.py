@@ -4,7 +4,8 @@ import os
 import sqlite3
 from contextlib import closing
 
-DATABASE = os.path.join(os.path.realpath(os.path.dirname(__file__)), "doorlock.db")
+DATABASE = os.path.join(os.path.realpath(
+    os.path.dirname(__file__)), "doorlock.db")
 
 # SQL must be setup as user so table is editable by user
 

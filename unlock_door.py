@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
-import RPi.GPIO as GPIO
-import time
-import socket
 import os
+import socket
+import time
+
+import RPi.GPIO as GPIO
+
 try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
 
 # Default values
-frequency = 50 # Hz
+frequency = 50  # Hz
 servo_pin = 27
 duty_cycle_open, duty_cycle_closed = 6, 3  # in %
 
@@ -31,6 +33,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(servo_pin, GPIO.OUT)
 
 servo = GPIO.PWM(servo_pin, frequency)
+
 
 def server():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

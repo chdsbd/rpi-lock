@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 
 import os
-import unittest
 import tempfile
+import unittest
 
 import lock_interface
 

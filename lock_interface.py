@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import print_function
 
+import logging
 import os
 import socket
 import sqlite3
@@ -20,6 +20,9 @@ try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
+
+
+logging.basicConfig(filename='lock_interface.log', level=logging.INFO)
 
 
 app = Flask(__name__)
@@ -48,8 +51,8 @@ try:
         DEBUG=bool(config.get("WEB", "DEBUG")),
         PORT=int(config.get("WEB", "PORT")),
         RFID_STATUS_FILE=config.get("PATH", "RFID_STATUS_FILE"))
-except configparser.Error as e:
-    print("ConfigParser Error: ", e)
+except configparser.Error as err:
+    logging.warning("ConfigParser error: %s", err)
 
 
 def connect_db():
@@ -197,8 +200,9 @@ def show_log():
 @app.route('/status')
 @login_required
 def status():
-    status = dict(rfid=os.path.isfile(RFID_STATUS_FILE), net=have_internet())
-    return render_template('status.html', status=status)
+    status_items = dict(rfid=os.path.isfile(
+        RFID_STATUS_FILE), net=have_internet())
+    return render_template('status.html', status=status_items)
 
 
 @app.route('/unlock', methods=['POST'])
@@ -220,7 +224,7 @@ def door_unlock():
     s.sendall(b'unlock')
     reply = s.recv(1024)
     s.close()
-    print("Received reply:", reply.decode("utf-8"))
+    logging.info("Received reply: %s", reply.decode("utf-8"))
 
 
 @app.errorhandler(404)

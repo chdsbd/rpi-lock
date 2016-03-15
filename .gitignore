@@ -4,3 +4,4 @@ venv/
 flask.cfg
 rpi_lock/
 rpi-lock.cfg
+*.log

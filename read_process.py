@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from __future__ import print_function
 
+import logging
 import os
 import socket
 import sqlite3
@@ -14,36 +14,38 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
+logging.basicConfig(filename='read_process.log', level=logging.INFO)
+
 # Default values
-data0 = 11
-data1 = 7
+DATA0 = 11
+DATA1 = 7
 database = os.path.join(os.path.realpath(
     os.path.dirname(__file__)), "doorlock.db")
-base_timeout = 10
-rfid_status_file = "/tmp/rfid_running"
+BASE_TIMEOUT = 10
+RFID_STATUS_FILE = "/tmp/rfid_running"
 
 config_file_paths = [os.path.expanduser('~/rpi-lock.cfg'),
                      os.path.join(os.path.realpath(os.path.dirname(__file__)), "rpi-lock.cfg")]
 config = configparser.ConfigParser()
 config.read(config_file_paths)
 try:
-    data0 = int(config.get("RFID", "DATA0"))
-    data1 = int(config.get("RFID", "DATA1"))
-    base_timeout = int(config.get("RFID", "BASE_TIMEOUT"))
-    rfid_status_file = config.get("PATH", "RFID_STATUS_FILE").strip("'")
-except configparser.Error as e:
-    print("ConfigParser Error: ", e)
+    DATA0 = int(config.get("RFID", "DATA0"))
+    DATA1 = int(config.get("RFID", "DATA1"))
+    BASE_TIMEOUT = int(config.get("RFID", "BASE_TIMEOUT"))
+    RFID_STATUS_FILE = config.get("PATH", "RFID_STATUS_FILE").strip("'")
+except configparser.Error as err:
+    logging.warning("ConfigParser error: %s", err)
 
-timeout = base_timeout
+timeout = BASE_TIMEOUT
 bits = ''
 
 
 def gpio_setup():
     GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(data1, GPIO.IN)
-    GPIO.setup(data0, GPIO.IN)
-    GPIO.add_event_detect(data1, GPIO.FALLING, callback=one)
-    GPIO.add_event_detect(data0, GPIO.FALLING, callback=zero)
+    GPIO.setup(DATA0, GPIO.IN)
+    GPIO.setup(DATA1, GPIO.IN)
+    GPIO.add_event_detect(DATA0, GPIO.FALLING, callback=zero)
+    GPIO.add_event_detect(DATA1, GPIO.FALLING, callback=one)
 
 
 def connect_db():
@@ -54,38 +56,37 @@ def one(channel):
     global bits
     global timeout
     bits = bits + '1'
-    timeout = base_timeout
+    timeout = BASE_TIMEOUT
 
 
 def zero(channel):
     global bits
     global timeout
     bits = bits + '0'
-    timeout = base_timeout
+    timeout = BASE_TIMEOUT
 
 
 def loop():
     global timeout
     global bits
-    print('Ready')
     while True:
         if len(bits) > 0:
             timeout -= 1
             if timeout == 0:
                 process_card(bits)
                 bits = ''
-                timeout = base_timeout
+                timeout = BASE_TIMEOUT
         time.sleep(.001)
 
 
 def process_card(binary):
     name, status = auth_status(binary)
     if status:
-        print(u'Allowed "{}" entry.'.format(name))
+        logging.info(u'Allowed "%s" entry.', name)
         unlock()
         log(status, binary, name)
     else:
-        print('Disallowed:', binary)
+        logging.info('Disallowed: %s', binary)
         log(False, binary)
 
 
@@ -108,7 +109,7 @@ def unlock():
     s.sendall(b'unlock')
     reply = s.recv(1024)
     s.close()
-    print("Received reply:", reply.decode("utf-8"))
+    logging.info("Received reply to unlock request: %s", reply.decode("utf-8"))
 
 
 def log(status, binary, name=None):
@@ -125,13 +126,13 @@ def log(status, binary, name=None):
 
 def main():
     try:
-        open(rfid_status_file, 'w')
+        open(RFID_STATUS_FILE, 'w')
         gpio_setup()
         loop()
     except KeyboardInterrupt:
-        os.remove(rfid_status_file)
+        os.remove(RFID_STATUS_FILE)
         GPIO.cleanup()
-        print('Clean Exit.')
+        logging.info('Clean Exit.')
 
 if __name__ == '__main__':
     main()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from __future__ import print_function
 
+import logging
 import os
 import socket
 import time
@@ -12,27 +12,30 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
+logging.basicConfig(filename='unlock_door.log', level=logging.INFO)
+
 # Default values
-frequency = 50  # Hz
-servo_pin = 27
-duty_cycle_open, duty_cycle_closed = 6, 3  # in %
+UNLOCK_TIME = 2.5
+FREQUENCY = 50  # Hz
+SERVO_PIN = 27
+DUTY_CYCLE_OPEN, DUTY_CYCLE_CLOSED = 6, 3  # in %
 
 config_file_paths = [os.path.expanduser('~/rpi-lock.cfg'),
                      os.path.join(os.path.realpath(os.path.dirname(__file__)), "rpi-lock.cfg")]
 config = configparser.ConfigParser()
 config.read(config_file_paths)
 try:
-    duty_cycle_open = int(config.get("SERVO", "OPEN"))
-    duty_cycle_closed = int(config.get("SERVO", "CLOSED"))
-    servo_pin = int(config.get("SERVO", "PIN"))
-    frequency = int(config.get("SERVO", "FREQUENCY"))
-except configparser.Error as e:
-    print("ConfigParser Error: ", e)
+    DUTY_CYCLE_OPEN = int(config.get("SERVO", "OPEN"))
+    DUTY_CYCLE_CLOSED = int(config.get("SERVO", "CLOSED"))
+    SERVO_PIN = int(config.get("SERVO", "PIN"))
+    FREQUENCY = int(config.get("SERVO", "FREQUENCY"))
+except configparser.Error as err:
+    logging.warning("ConfigParser error: %s", err)
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(servo_pin, GPIO.OUT)
+GPIO.setup(SERVO_PIN, GPIO.OUT)
 
-servo = GPIO.PWM(servo_pin, frequency)
+servo = GPIO.PWM(SERVO_PIN, FREQUENCY)
 
 
 def server():
@@ -43,7 +46,7 @@ def server():
         s.listen(1)
         conn, addr = s.accept()
         message = conn.recv(1024)
-        print("Recieved request: ", message.decode("utf-8"))
+        logging.info("Recieved request: %s", message.decode("utf-8"))
         if message == b"unlock":
             unlock_door()
             conn.sendall(b"Servo Triggered")
@@ -52,11 +55,11 @@ def server():
 
 
 def unlock_door():
-    print('Unlocking...')
-    servo.start(duty_cycle_open)
-    time.sleep(2.5)
-    print('Locking...')
-    servo.ChangeDutyCycle(duty_cycle_closed)
+    logging.info('Unlocking...')
+    servo.start(DUTY_CYCLE_OPEN)
+    time.sleep(UNLOCK_TIME)
+    logging.info('Locking...')
+    servo.ChangeDutyCycle(DUTY_CYCLE_CLOSED)
     time.sleep(1)
     servo.ChangeDutyCycle(0)
 
@@ -64,6 +67,4 @@ if __name__ == '__main__':
     try:
         server()
     except KeyboardInterrupt:
-        GPIO.cleanup()
-    except:
         GPIO.cleanup()

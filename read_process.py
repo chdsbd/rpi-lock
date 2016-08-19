@@ -25,9 +25,9 @@ config_file_paths = [os.path.expanduser('~/rpi-lock.cfg'),
 config = configparser.ConfigParser()
 config.read(config_file_paths)
 try:
-    data0 = int(config.get("RFID", "DATA0"))
-    data1 = int(config.get("RFID", "DATA1"))
-    base_timeout = int(config.get("RFID", "BASE_TIMEOUT"))
+    data0 = config.getint("RFID", "DATA0")
+    data1 = config.getint("RFID", "DATA1")
+    base_timeout = config.getint("RFID", "BASE_TIMEOUT")
     rfid_status_file = config.get("PATH", "RFID_STATUS_FILE").strip("'")
 except configparser.Error as e:
     print("ConfigParser Error: ", e)

@@ -20,10 +20,10 @@ config_file_paths = [os.path.expanduser('~/rpi-lock.cfg'),
 config = configparser.ConfigParser()
 config.read(config_file_paths)
 try:
-    duty_cycle_open = int(config.get("SERVO", "OPEN"))
-    duty_cycle_closed = int(config.get("SERVO", "CLOSED"))
-    servo_pin = int(config.get("SERVO", "PIN"))
-    frequency = int(config.get("SERVO", "FREQUENCY"))
+    duty_cycle_open = config.getint("SERVO", "OPEN")
+    duty_cycle_closed = config.getint("SERVO", "CLOSED")
+    servo_pin = config.getint("SERVO", "PIN")
+    frequency = config.getint("SERVO", "FREQUENCY")
 except configparser.Error as e:
     print("ConfigParser Error: ", e)
 

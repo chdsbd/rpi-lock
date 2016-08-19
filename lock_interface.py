@@ -42,8 +42,8 @@ try:
     USERNAME = config.get("WEB", "USERNAME"),
     PASSWORD = config.get("WEB", "PASSWORD"),
     SECRET_KEY = config.get("WEB", "SECRET_KEY"),
-    DEBUG = bool(config.get("WEB", "DEBUG")),
-    PORT = int(config.get("WEB", "PORT")),
+    DEBUG = config.getboolean("WEB", "DEBUG"),
+    PORT = config.getint("WEB", "PORT"),
     RFID_STATUS_FILE = config.get("PATH", "RFID_STATUS_FILE"))
 except configparser.Error as e:
     print("ConfigParser Error: ", e)
